@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NetEstimator v1.2 - Dimensionamento de Infraestrutura de Redes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+  <!-- CABEÇALHO -->
+  <header class="bg-slate-900 text-white py-5 border-b border-slate-800 shadow-sm sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+      <div>
+        <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+          <span class="text-blue-500">⚡ NetEstimator</span>
+          <span class="text-xs bg-blue-900/80 text-blue-300 font-semibold px-2 py-0.5 rounded border border-blue-700">v1.2 MVP</span>
+        </h1>
+        <p class="text-xs text-slate-400 mt-0.5">Motor de Engenharia e Lista de Materiais de Campo</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button type="button" onclick="salvarProjetoLocal()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg px-3 py-1.5 font-medium transition flex items-center gap-1.5">
+          💾 Salvar Vistoria
+        </button>
+        <button type="button" onclick="limparFormulario()" class="text-xs bg-slate-800 hover:bg-rose-950 text-slate-300 hover:text-rose-200 border border-slate-700 rounded-lg px-2.5 py-1.5 font-medium transition">
+          ↺ Limpar
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- FORMULÁRIO DE ENTRADA (COLUNA ESQUERDA) -->
+      <section class="lg:col-span-5 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+        <h2 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center justify-between">
+          <span>📋 Dados da Vistoria Técnica</span>
+          <span class="text-xs font-normal text-slate-500">Inputs de Campo</span>
+        </h2>
+
+        <form id="calcForm" class="space-y-4" onsubmit="event.preventDefault(); calcularMateriais();">
+          
+          <!-- Identificação do Cliente / Projeto -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1" for="nomeProjeto">Nome do Projeto / Cliente</label>
+            <input type="text" id="nomeProjeto" value="Vistoria Escritório Central" placeholder="Ex: Escritório Advocacia - Sala 402" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium" />
+          </div>
+
+          <!-- Quantidade de Pontos -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-800 mb-1" for="pontos">Quantidade de Pontos Ativos</label>
+            <input type="number" id="pontos" value="24" min="1" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3.5 py-2 text-slate-900 focus:ring-2 focus:ring-blue-500 font-bold text-lg" />
+          </div>
+
+          <!-- Categoria e Blindagem -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1" for="categoria">Categoria</label>
+              <select id="categoria" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium">
+                <option value="Cat6" selected>Cat6 (1Gbps/10G)</option>
+                <option value="Cat5e">Cat5e (100M/1Gbps)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1" for="blindagem">Blindagem</label>
+              <select id="blindagem" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium">
+                <option value="UTP" selected>UTP (Sem blindagem)</option>
+                <option value="FTP">FTP (Blindado)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Modo de Medição de Cabeamento -->
+          <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1" for="tipoMedicao">Modo de Levantamento Métrico</label>
+              <select id="tipoMedicao" onchange="alternarModoMedicao()" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium">
+                <option value="absoluta" selected>Metragem Absoluta (Rota levantada)</option>
+                <option value="media">Distância Média por Ponto</option>
+              </select>
+            </div>
+
+            <div id="blocoMetragemAbsoluta">
+              <label class="block text-xs font-semibold text-slate-600 mb-1" for="metragemAbsoluta">Metragem Total Medida (m)</label>
+              <input type="number" id="metragemAbsoluta" value="350" min="1" step="1" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm text-slate-900 font-medium" />
+              <span class="text-[11px] text-slate-500 block mt-0.5">Soma total de todos os lances de cabos medidos.</span>
+            </div>
+
+            <div id="blocoDistanciaMedia" class="hidden">
+              <label class="block text-xs font-semibold text-slate-600 mb-1" for="distanciaMedia">Distância Média Linear (m/ponto)</label>
+              <input type="number" id="distanciaMedia" value="20" min="1" step="0.5" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm text-slate-900 font-medium" />
+              <span class="text-[11px] text-slate-500 block mt-0.5">Multiplicado pela quantidade de pontos informada.</span>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1" for="reserva">Reserva Técnica / Curvaturas (%)</label>
+              <input type="number" id="reserva" value="15" min="0" max="50" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm text-slate-900 font-medium" />
+              <span class="text-[11px] text-slate-500 block mt-0.5">Padrão recomendado: 10% a 15% para descidas e sobras de rack.</span>
+            </div>
+          </div>
+
+          <!-- Lançamento Simultâneo -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1" for="modoPuxamento">Método de Passagem dos Cabos</label>
+            <select id="modoPuxamento" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium">
+              <option value="pura">Divisão Métrica Direta (Mínimo estrito)</option>
+              <option value="2" selected>Lançamento Paralelo (Puxar 2 cabos juntos)</option>
+              <option value="3">Lançamento Paralelo (Puxar 3 cabos juntos)</option>
+              <option value="4">Lançamento Paralelo (Puxar 4 cabos juntos)</option>
+            </select>
+          </div>
+
+          <!-- Patch Panel -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1" for="padraoPP">Densidade Patch Panel</label>
+              <select id="padraoPP" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium">
+                <option value="24" selected>24 Portas (1U)</option>
+                <option value="48">48 Portas (2U)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1" for="tipoPP">Tipo de Conexão PP</label>
+              <select id="tipoPP" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium">
+                <option value="modular" selected>Modular (Descarregado)</option>
+                <option value="idc">Convencional (Bloco 110 IDC)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Switches e Ativos -->
+          <div class="bg-blue-50/60 p-3.5 rounded-xl border border-blue-100 space-y-3">
+            <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider">Ativos de Rede (Switches)</h3>
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="portasSwitch">Portas</label>
+                <select id="portasSwitch" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium">
+                  <option value="8">8P</option>
+                  <option value="16">16P</option>
+                  <option value="24" selected>24P</option>
+                  <option value="48">48P</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="velocidadeSwitch">Velocidade</label>
+                <select id="velocidadeSwitch" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium">
+                  <option value="10/100/1000" selected>Gigabit</option>
+                  <option value="10/100">Fast 10/100</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="gerenciamentoSwitch">Gerenciável</label>
+                <select id="gerenciamentoSwitch" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium">
+                  <option value="Gerenciável" selected>Sim (L2/L3)</option>
+                  <option value="Não Gerenciável">Não</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Patch Cords e Identificação -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1" for="cenarioPC">Patch Cords Estação</label>
+              <select id="cenarioPC" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium">
+                <option value="pronto" selected>Injetados de Fábrica (2,5m)</option>
+                <option value="custom">Montagem Manual em Campo</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1" for="usarRotuladora">Rotuladora / Etiquetas</label>
+              <select id="usarRotuladora" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium">
+                <option value="sim" selected>Sim (4 etiquetas/ponto)</option>
+                <option value="nao">Não orçar fitas</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Botão Calcular -->
+          <button type="submit" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md transition duration-150 flex items-center justify-center gap-2 cursor-pointer">
+            <span>⚙️ Calcular Lista de Materiais</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- RESULTADOS E QUANTITATIVOS (COLUNA DIREITA) -->
+      <section class="lg:col-span-7 space-y-6">
+        
+        <!-- CARDS DE RESUMO RÁPIDO -->
+        <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 shadow-sm">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider">Resumo Executivo do Dimensionamento</h3>
+            <span id="labelNomeProjeto" class="text-xs font-semibold text-blue-700 truncate max-w-[200px]"></span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+            <div class="bg-white p-3 rounded-xl border border-blue-100 shadow-sm">
+              <span class="text-[11px] text-slate-500 block font-medium">Cabo Total</span>
+              <span id="resumoMetros" class="text-lg font-bold text-blue-700">0 m</span>
+            </div>
+            <div class="bg-white p-3 rounded-xl border border-blue-100 shadow-sm">
+              <span class="text-[11px] text-slate-500 block font-medium">Caixas (305m)</span>
+              <span id="resumoCaixas" class="text-lg font-bold text-blue-700">0 cx</span>
+            </div>
+            <div class="bg-white p-3 rounded-xl border border-blue-100 shadow-sm">
+              <span class="text-[11px] text-slate-500 block font-medium">Switches</span>
+              <span id="resumoSwitches" class="text-lg font-bold text-blue-700">0 un</span>
+            </div>
+            <div class="bg-white p-3 rounded-xl border border-blue-100 shadow-sm">
+              <span class="text-[11px] text-slate-500 block font-medium">Gabinete Rack</span>
+              <span id="resumoRack" class="text-lg font-bold text-blue-700">0 U</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- TABELA DETALHADA E SEGMENTADA -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-2 bg-slate-50/50">
+            <div>
+              <h3 class="font-bold text-slate-900 text-sm">Lista Quantitativa de Engenharia</h3>
+              <p class="text-xs text-slate-500">Pronta para cotação e expedição de materiais</p>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-600">
+              <thead class="bg-slate-100/75 text-slate-700 font-semibold border-b border-slate-200 text-xs">
+                <tr>
+                  <th class="py-3 px-4">Item / Descrição Técnica</th>
+                  <th class="py-3 px-4 w-28 text-center">Quantidade</th>
+                  <th class="py-3 px-4">Critério de Engenharia / Embalagem</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaMateriais" class="divide-y divide-slate-100 text-xs sm:text-sm">
+                <!-- Inserido dinamicamente pelo JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- BOTÕES DE AÇÃO E EXPORTAÇÃO -->
+          <div class="p-4 bg-slate-50 border-t border-slate-100 flex flex-wrap gap-2 justify-end">
+            <button type="button" onclick="exportarCSV()" class="px-3.5 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5">
+              📊 Baixar CSV
+            </button>
+            <button type="button" onclick="compartilharWhatsApp()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5">
+              💬 WhatsApp
+            </button>
+            <button type="button" onclick="copiarLista()" class="px-3.5 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5">
+              📋 Copiar Lista
+            </button>
+            <button type="button" onclick="window.print()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5">
+              🖨️ Imprimir / PDF
+            </button>
+          </div>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <!-- JAVASCRIPT DO MOTOR DE CÁLCULO E REGRAS -->
+  <script>
+    // Alternância do tipo de medição métrica
+    function alternarModoMedicao() {
+      const modo = document.getElementById('tipoMedicao').value;
+      const blocoAbsoluta = document.getElementById('blocoMetragemAbsoluta');
+      const blocoMedia = document.getElementById('blocoDistanciaMedia');
+
+      if (modo === 'absoluta') {
+        blocoAbsoluta.classList.remove('hidden');
+        blocoMedia.classList.add('hidden');
+      } else {
+        blocoAbsoluta.classList.add('hidden');
+        blocoMedia.classList.remove('hidden');
+      }
+    }
+
+    // Variável global para armazenar os itens do cálculo atual
+    let itensCalculados = [];
+
+    // Execução principal do motor de cálculo
+    function calcularMateriais() {
+      const nomeProjeto = document.getElementById('nomeProjeto').value.trim() || "Projeto Sem Nome";
+      const pontos = parseInt(document.getElementById('pontos').value) || 0;
+      const categoria = document.getElementById('categoria').value;
+      const blindagem = document.getElementById('blindagem').value;
+      const tipoMedicao = document.getElementById('tipoMedicao').value;
+      const reserva = parseFloat(document.getElementById('reserva').value) || 0;
+      const modoPuxamento = document.getElementById('modoPuxamento').value;
+      const padraoPP = parseInt(document.getElementById('padraoPP').value);
+      const tipoPP = document.getElementById('tipoPP').value;
+      const portasSwitch = parseInt(document.getElementById('portasSwitch').value);
+      const velocidadeSwitch = document.getElementById('velocidadeSwitch').value;
+      const gerenciamentoSwitch = document.getElementById('gerenciamentoSwitch').value;
+      const cenarioPC = document.getElementById('cenarioPC').value;
+      const usarRotuladora = document.getElementById('usarRotuladora').value;
+
+      if (pontos <= 0) {
+        alert("Por favor, informe uma quantidade válida de pontos ativos (> 0).");
+        return;
+      }
+
+      document.getElementById('labelNomeProjeto').innerText = nomeProjeto;
+
+      // 1. Cabeamento Horizontal
+      let metrosBase = 0;
+      if (tipoMedicao === 'absoluta') {
+        metrosBase = parseFloat(document.getElementById('metragemAbsoluta').value) || 0;
+      } else {
+        const distMedia = parseFloat(document.getElementById('distanciaMedia').value) || 0;
+        metrosBase = pontos * distMedia;
+      }
+
+      const metrosTotais = Math.ceil(metrosBase * (1 + (reserva / 100)));
+      const caixasPuras = Math.ceil(metrosTotais / 305);
+      let caixasFinal = caixasPuras;
+      let notaCaixas = "Mínimo métrico estrito";
+
+      if (modoPuxamento !== 'pura') {
+        const simultaneos = parseInt(modoPuxamento);
+        if (simultaneos > caixasPuras) {
+          caixasFinal = simultaneos;
+          notaCaixas = `Recomendado ${simultaneos} caixas abertas em paralelo p/ puxamento simultâneo`;
+        } else {
+          notaCaixas = `Atende ${simultaneos} caixas simultâneas (sobra ${caixasFinal - simultaneos} cx reserva)`;
+        }
+      }
+
+      // 2. Conectividade de Área de Trabalho e Rack
+      const keystones = (tipoPP === 'modular') ? Math.ceil((pontos * 2) * 1.05) : pontos;
+      const espelhos = Math.ceil(pontos / 2);
+      const moduloCego = (pontos % 2 !== 0) ? 1 : 0;
+      
+      const conectoresRJ45Texto = (cenarioPC === 'pronto')
+        ? "1 pct (20 un)"
+        : `${Math.ceil((pontos * 2) * 1.25)} un`;
+
+      const conectoresObs = (cenarioPC === 'pronto')
+        ? "Reserva técnica para APs de teto, CFTV e manutenções"
+        : "Confecção manual (inclui margem de 25% p/ perdas e refação)";
+
+      // 3. Ativos e Ocupação de Rack
+      const qtdPP = Math.ceil(pontos / padraoPP);
+      const usPP = (padraoPP === 24) ? qtdPP * 1 : qtdPP * 2;
+
+      const portasNecessarias = Math.ceil(pontos * 1.20); // 20% de reserva
+      const qtdSwitches = Math.ceil(portasNecessarias / portasSwitch);
+      const totalPortasDisponiveis = qtdSwitches * portasSwitch;
+      const usSwitches = qtdSwitches * 1;
+
+      const guias1U = qtdPP + qtdSwitches; // 1 guia horizontal por equipamento ativo/passivo
+      const usGuias = guias1U * 1;
+      const usBandejaNobreak = 3; // Estimativa padrão
+      const usOcupados = usPP + usSwitches + usGuias + usBandejaNobreak;
+
+      const usComFolga = Math.ceil(usOcupados * 1.35); // 35% de folga estrutural
+      const tamanhosComerciaisRack = [6, 9, 12, 16, 24, 36, 44];
+      let rackRecomendado = 44;
+      for (let t of tamanhosComerciaisRack) {
+        if (t >= usComFolga) {
+          rackRecomendado = t;
+          break;
+        }
+      }
+
+      const tipoRack = rackRecomendado <= 16 ? "Mini-Rack de Parede" : "Rack Fechado de Piso";
+      const usLivres = Math.max(0, rackRecomendado - usOcupados);
+      const tampasCegas1U = usLivres > 0 ? usLivres : 1;
+
+      // 4. Consumíveis e Identificação
+      const rolosVelcro = Math.max(1, Math.ceil(pontos / 24));
+      const pacotesAbracadeiras = Math.max(1, Math.ceil(pontos / 24));
+
+      // Atualização dos cards de topo
+      document.getElementById('resumoMetros').innerText = `${metrosTotais} m`;
+      document.getElementById('resumoCaixas').innerText = `${caixasFinal} cx`;
+      document.getElementById('resumoSwitches').innerText = `${qtdSwitches} un`;
+      document.getElementById('resumoRack').innerText = `${rackRecomendado} U`;
+
+      // Estruturação da Lista Categorizada
+      itensCalculados = [
+        // GRUPO 1: CABEAMENTO HORIZONTAL
+        {
+          categoriaItem: "Cabeamento Horizontal",
+          desc: `Cabo de Rede ${categoria} ${blindagem} 4 Pares Homologado`,
+          qtd: `${metrosTotais} m`,
+          emb: `${caixasFinal} cx de 305m (${notaCaixas})`
+        },
+        // GRUPO 2: CONECTIVIDADE & POSTOS
+        {
+          categoriaItem: "Conectividade & Tomadas",
+          desc: `Keystone Fêmea RJ45 ${categoria} ${blindagem} (90°/180°)`,
+          qtd: `${keystones} un`,
+          emb: tipoPP === 'modular' ? "Tomadas de parede + Patch Panel Modular (+5% margem)" : "Tomadas de parede"
+        },
+        {
+          categoriaItem: "Conectividade & Tomadas",
+          desc: `Espelho de Parede 4x2 p/ 2 Conectores (Posto Duplo)`,
+          qtd: `${espelhos} un`,
+          emb: moduloCego > 0 ? `Acompanha ${moduloCego} módulo(s) cego(s) p/ acabamento` : "Postos duplos padrão"
+        },
+        {
+          categoriaItem: "Conectividade & Tomadas",
+          desc: `Conector RJ45 Macho ${categoria} ${blindagem} (EZ-Crimp Passante)`,
+          qtd: conectoresRJ45Texto,
+          emb: conectoresObs
+        },
+        {
+          categoriaItem: "Conectividade & Tomadas",
+          desc: `Patch Cord ${categoria} ${cenarioPC === 'pronto' ? '2,5m injetado' : 'Sob medida'} (Estação)`,
+          qtd: `${pontos} un`,
+          emb: cenarioPC === 'pronto' ? "Cabos injetados e certificados de fábrica" : "Lances confeccionados em campo"
+        },
+        // GRUPO 3: RACK E ATIVOS
+        {
+          categoriaItem: "Infraestrutura de Rack & Ativos",
+          desc: `Patch Panel ${padraoPP} Portas (${tipoPP === 'modular' ? 'Modular / Descarregado' : 'IDC 110'})`,
+          qtd: `${qtdPP} un`,
+          emb: `Ocupação: ${usPP}U no rack`
+        },
+        {
+          categoriaItem: "Infraestrutura de Rack & Ativos",
+          desc: `Switch de Rede ${portasSwitch}P ${velocidadeSwitch} (${gerenciamentoSwitch})`,
+          qtd: `${qtdSwitches} un`,
+          emb: `Total: ${totalPortasDisponiveis} portas (atende ${portasNecessarias} portas c/ 20% folga)`
+        },
+        {
+          categoriaItem: "Infraestrutura de Rack & Ativos",
+          desc: `Patch Cord ${categoria} 0,5m / 1,0m (Manobra de Rack)`,
+          qtd: `${pontos} un`,
+          emb: "Cabos injetados de manobra curta direta Switch-PP"
+        },
+        {
+          categoriaItem: "Infraestrutura de Rack & Ativos",
+          desc: `Guia de Cabos Horizontal 1U Fechada`,
+          qtd: `${guias1U} un`,
+          emb: "1U por equipamento ativo ou passivo de manobra"
+        },
+        {
+          categoriaItem: "Infraestrutura de Rack & Ativos",
+          desc: `Tampa Cega 1U p/ Rack (Blanking Panel)`,
+          qtd: `${tampasCegas1U} un`,
+          emb: "Fechamento de Us ociosos, fluxo térmico e acabamento visual"
+        },
+        {
+          categoriaItem: "Infraestrutura de Rack & Ativos",
+          desc: `${tipoRack} ${rackRecomendado}U Padrão 19"`,
+          qtd: "1 un",
+          emb: `Ocupação: ${usOcupados}U | Recomendado c/ 35% expansão: ${rackRecomendado}U`
+        },
+        // GRUPO 4: IDENTIFICAÇÃO E ORGANIZAÇÃO
+        {
+          categoriaItem: "Identificação & Consumíveis",
+          desc: `Fita de Velcro Organizadora (Rolo 3m a 5m)`,
+          qtd: `${rolosVelcro} rolo(s)`,
+          emb: "Feixes de cabos de dados (proibido enforca-gato direto no feixe)"
+        },
+        {
+          categoriaItem: "Identificação & Consumíveis",
+          desc: `Abraçadeiras Plásticas de Nylon 150mm (Cintas)`,
+          qtd: `${pacotesAbracadeiras} pct`,
+          emb: "100 unidades por pacote (fixação em guias e infra mecânica)"
+        }
+      ];
+
+      // Item opcional de rotuladora
+      if (usarRotuladora === 'sim') {
+        const totalEtiquetas = pontos * 4;
+        const cartuchosFita = Math.max(1, Math.ceil(totalEtiquetas / 150));
+        itensCalculados.push({
+          categoriaItem: "Identificação & Consumíveis",
+          desc: "Cartucho de Fita Laminada p/ Rotuladora Eletrônica",
+          qtd: `${cartuchosFita} un`,
+          emb: `Estimativa p/ ${totalEtiquetas} identificações (4 por ponto: Ponta A, B, PP e Espelho)`
+        });
+      }
+
+      renderizarTabela();
+    }
+
+    // Renderização com separadores de categoria
+    function renderizarTabela() {
+      const tbody = document.getElementById('tabelaMateriais');
+      tbody.innerHTML = "";
+
+      let categoriaAtual = "";
+
+      itensCalculados.forEach(item => {
+        if (item.categoriaItem !== categoriaAtual) {
+          categoriaAtual = item.categoriaItem;
+          const trCat = document.createElement('tr');
+          trCat.className = "bg-slate-100/90 font-bold text-slate-800 text-[11px] uppercase tracking-wider";
+          trCat.innerHTML = `<td colspan="3" class="py-2 px-4 border-t border-b border-slate-200">${categoriaAtual}</td>`;
+          tbody.appendChild(trCat);
+        }
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-blue-50/40 transition-colors";
+        tr.innerHTML = `
+          <td class="py-2.5 px-4 font-semibold text-slate-800">${item.desc}</td>
+          <td class="py-2.5 px-4 text-center font-bold text-blue-700 bg-blue-50/30">${item.qtd}</td>
+          <td class="py-2.5 px-4 text-xs text-slate-500">${item.emb}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Copiar Texto Puro
+    function copiarLista() {
+      if (itensCalculados.length === 0) {
+        alert("Execute o cálculo antes de copiar.");
+        return;
+      }
+      const nomeProjeto = document.getElementById('nomeProjeto').value || "Projeto";
+      let texto = `*=== LISTA DE MATERIAIS - ${nomeProjeto.toUpperCase()} ===*\n\n`;
+      let cat = "";
+
+      itensCalculados.forEach(i => {
+        if (i.categoriaItem !== cat) {
+          cat = i.categoriaItem;
+          texto += `\n[ ${cat.toUpperCase()} ]\n`;
+        }
+        texto += `• ${i.desc}: ${i.qtd} (${i.emb})\n`;
+      });
+
+      navigator.clipboard.writeText(texto).then(() => {
+        alert("Lista copiada para a área de transferência!");
+      });
+    }
+
+    // Compartilhar via WhatsApp
+    function compartilharWhatsApp() {
+      if (itensCalculados.length === 0) {
+        alert("Execute o cálculo antes de compartilhar.");
+        return;
+      }
+      const nomeProjeto = document.getElementById('nomeProjeto').value || "Projeto";
+      let texto = `*⚡ NetEstimator - Lista de Materiais*\n`;
+      texto += `*Projeto:* ${nomeProjeto}\n\n`;
+      let cat = "";
+
+      itensCalculados.forEach(i => {
+        if (i.categoriaItem !== cat) {
+          cat = i.categoriaItem;
+          texto += `\n*${cat.toUpperCase()}*\n`;
+        }
+        texto += `▫️ *${i.desc}* -> ${i.qtd}\n   _${i.emb}_\n`;
+      });
+
+      texto += `\n_Dimensionado via NetEstimator MVP_`;
+
+      const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
+      window.open(url, '_blank');
+    }
+
+    // Exportar Planilha CSV
+    function exportarCSV() {
+      if (itensCalculados.length === 0) {
+        alert("Execute o cálculo antes de exportar.");
+        return;
+      }
+      const nomeProjeto = document.getElementById('nomeProjeto').value || "NetEstimator_Materiais";
+      let csv = "Categoria;Item/Descricao;Quantidade;Observacao/Embalagem\n";
+
+      itensCalculados.forEach(i => {
+        csv += `"${i.categoriaItem}";"${i.desc}";"${i.qtd}";"${i.emb}"\n`;
+      });
+
+      const blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `${nomeProjeto.replace(/\s+/g, '_')}_materiais.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Persistência no LocalStorage
+    function salvarProjetoLocal() {
+      const dados = {
+        nomeProjeto: document.getElementById('nomeProjeto').value,
+        pontos: document.getElementById('pontos').value,
+        categoria: document.getElementById('categoria').value,
+        blindagem: document.getElementById('blindagem').value,
+        tipoMedicao: document.getElementById('tipoMedicao').value,
+        metragemAbsoluta: document.getElementById('metragemAbsoluta').value,
+        distanciaMedia: document.getElementById('distanciaMedia').value,
+        reserva: document.getElementById('reserva').value,
+        modoPuxamento: document.getElementById('modoPuxamento').value,
+        padraoPP: document.getElementById('padraoPP').value,
+        tipoPP: document.getElementById('tipoPP').value,
+        portasSwitch: document.getElementById('portasSwitch').value,
+        velocidadeSwitch: document.getElementById('velocidadeSwitch').value,
+        gerenciamentoSwitch: document.getElementById('gerenciamentoSwitch').value,
+        cenarioPC: document.getElementById('cenarioPC').value,
+        usarRotuladora: document.getElementById('usarRotuladora').value
+      };
+      localStorage.setItem('netestimator_projeto', JSON.stringify(dados));
+      alert("✅ Vistoria salva no navegador! Seus dados não serão perdidos.");
+    }
+
+    function carregarProjetoLocal() {
+      const salvo = localStorage.getItem('netestimator_projeto');
+      if (salvo) {
+        try {
+          const dados = JSON.parse(salvo);
+          for (const key in dados) {
+            const el = document.getElementById(key);
+            if (el) el.value = dados[key];
+          }
+        } catch(e) {
+          console.error("Erro ao carregar dados locais", e);
+        }
+      }
+    }
+
+    function limparFormulario() {
+      if (confirm("Deseja realmente redefinir o formulário?")) {
+        localStorage.removeItem('netestimator_projeto');
+        location.reload();
+      }
+    }
+
+    // Inicialização na carga da página
+    window.onload = function() {
+      carregarProjetoLocal();
+      alternarModoMedicao();
+      calcularMateriais();
+    };
+  </script>
+</body>
+</html>
