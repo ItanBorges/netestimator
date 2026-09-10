@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NetEstimator v1.2 - Dimensionamento de Infraestrutura de Redes</title>
+  <title>NetEstimator v1.4 - Dimensionamento de Infraestrutura de Redes</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
@@ -18,15 +18,15 @@
       <div>
         <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
           <span class="text-blue-500">⚡ NetEstimator</span>
-          <span class="text-xs bg-blue-900/80 text-blue-300 font-semibold px-2 py-0.5 rounded border border-blue-700">v1.2 MVP</span>
+          <span class="text-xs bg-blue-900/80 text-blue-300 font-semibold px-2 py-0.5 rounded border border-blue-700">v1.4 MVP</span>
         </h1>
-        <p class="text-xs text-slate-400 mt-0.5">Motor de Engenharia e Lista de Materiais de Campo</p>
+        <p class="text-xs text-slate-400 mt-0.5">Motor de Engenharia, Energia, Borda e Materiais de Infraestrutura</p>
       </div>
       <div class="flex items-center gap-2">
-        <button type="button" onclick="salvarProjetoLocal()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg px-3 py-1.5 font-medium transition flex items-center gap-1.5">
+        <button type="button" onclick="salvarProjetoLocal()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg px-3 py-1.5 font-medium transition flex items-center gap-1.5 cursor-pointer">
           💾 Salvar Vistoria
         </button>
-        <button type="button" onclick="limparFormulario()" class="text-xs bg-slate-800 hover:bg-rose-950 text-slate-300 hover:text-rose-200 border border-slate-700 rounded-lg px-2.5 py-1.5 font-medium transition">
+        <button type="button" onclick="limparFormulario()" class="text-xs bg-slate-800 hover:bg-rose-950 text-slate-300 hover:text-rose-200 border border-slate-700 rounded-lg px-2.5 py-1.5 font-medium transition cursor-pointer">
           ↺ Limpar
         </button>
       </div>
@@ -37,7 +37,7 @@
   <main class="max-w-6xl mx-auto px-4 py-8">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
       
-      <!-- FORMULÁRIO DE ENTRADA (COLUNA ESQUERDA) -->
+      <!-- FORMULÁRIO DE ENTRADA -->
       <section class="lg:col-span-5 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
         <h2 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center justify-between">
           <span>📋 Dados da Vistoria Técnica</span>
@@ -46,10 +46,10 @@
 
         <form id="calcForm" class="space-y-4" onsubmit="event.preventDefault(); calcularMateriais();">
           
-          <!-- Identificação do Cliente / Projeto -->
+          <!-- Identificação do Projeto -->
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1" for="nomeProjeto">Nome do Projeto / Cliente</label>
-            <input type="text" id="nomeProjeto" value="Vistoria Escritório Central" placeholder="Ex: Escritório Advocacia - Sala 402" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium" />
+            <input type="text" id="nomeProjeto" value="Vistoria Técnica Padrão" placeholder="Ex: Matriz Corporativa - 3º Andar" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium" />
           </div>
 
           <!-- Quantidade de Pontos -->
@@ -89,27 +89,24 @@
             <div id="blocoMetragemAbsoluta">
               <label class="block text-xs font-semibold text-slate-600 mb-1" for="metragemAbsoluta">Metragem Total Medida (m)</label>
               <input type="number" id="metragemAbsoluta" value="350" min="1" step="1" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm text-slate-900 font-medium" />
-              <span class="text-[11px] text-slate-500 block mt-0.5">Soma total de todos os lances de cabos medidos.</span>
             </div>
 
             <div id="blocoDistanciaMedia" class="hidden">
               <label class="block text-xs font-semibold text-slate-600 mb-1" for="distanciaMedia">Distância Média Linear (m/ponto)</label>
               <input type="number" id="distanciaMedia" value="20" min="1" step="0.5" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm text-slate-900 font-medium" />
-              <span class="text-[11px] text-slate-500 block mt-0.5">Multiplicado pela quantidade de pontos informada.</span>
             </div>
 
             <div>
               <label class="block text-xs font-semibold text-slate-600 mb-1" for="reserva">Reserva Técnica / Curvaturas (%)</label>
               <input type="number" id="reserva" value="15" min="0" max="50" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm text-slate-900 font-medium" />
-              <span class="text-[11px] text-slate-500 block mt-0.5">Padrão recomendado: 10% a 15% para descidas e sobras de rack.</span>
             </div>
           </div>
 
-          <!-- Lançamento Simultâneo -->
+          <!-- Lançamento de Cabos -->
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1" for="modoPuxamento">Método de Passagem dos Cabos</label>
             <select id="modoPuxamento" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium">
-              <option value="pura">Divisão Métrica Direta (Mínimo estrito)</option>
+              <option value="pura">Divisão Métrica Direta</option>
               <option value="2" selected>Lançamento Paralelo (Puxar 2 cabos juntos)</option>
               <option value="3">Lançamento Paralelo (Puxar 3 cabos juntos)</option>
               <option value="4">Lançamento Paralelo (Puxar 4 cabos juntos)</option>
@@ -129,14 +126,14 @@
               <label class="block text-xs font-semibold text-slate-700 mb-1" for="tipoPP">Tipo de Conexão PP</label>
               <select id="tipoPP" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium">
                 <option value="modular" selected>Modular (Descarregado)</option>
-                <option value="idc">Convencional (Bloco 110 IDC)</option>
+                <option value="idc">Convencional (IDC 110)</option>
               </select>
             </div>
           </div>
 
-          <!-- Switches e Ativos -->
+          <!-- Switches de Rack (Ativos Centrais) -->
           <div class="bg-blue-50/60 p-3.5 rounded-xl border border-blue-100 space-y-3">
-            <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider">Ativos de Rede (Switches)</h3>
+            <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider">Switches de Rack (Centrais)</h3>
             <div class="grid grid-cols-3 gap-2">
               <div>
                 <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="portasSwitch">Portas</label>
@@ -164,20 +161,112 @@
             </div>
           </div>
 
+          <!-- MÓDULO ROTEADORES / ACCESS POINTS WI-FI -->
+          <div class="bg-emerald-50/60 p-3.5 rounded-xl border border-emerald-100 space-y-3">
+            <div class="flex justify-between items-center">
+              <h3 class="text-xs font-bold text-emerald-900 uppercase tracking-wider">Roteadores / Wi-Fi</h3>
+              <select id="incluirWifi" onchange="alternarWifi()" class="bg-white border border-emerald-300 rounded px-2 py-0.5 text-xs text-emerald-900 font-semibold">
+                <option value="sim" selected>Incluir no Projeto</option>
+                <option value="nao">Não Incluir</option>
+              </select>
+            </div>
+
+            <div id="blocoCamposWifi" class="space-y-2.5">
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="qtdWifi">Quantidade APs / Roteadores</label>
+                  <input type="number" id="qtdWifi" value="2" min="1" max="50" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-semibold" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="tipoDispositivoWifi">Tipo de Equipamento</label>
+                  <select id="tipoDispositivoWifi" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium">
+                    <option value="AP Teto/Parede" selected>AP Corporativo (Teto)</option>
+                    <option value="Roteador Borda">Roteador Wi-Fi Mesa/Rack</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="padraoWifi">Geração Wi-Fi</label>
+                  <select id="padraoWifi" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium">
+                    <option value="Wi-Fi 6 (802.11ax)" selected>Wi-Fi 6 (AX)</option>
+                    <option value="Wi-Fi 5 (802.11ac)">Wi-Fi 5 (AC)</option>
+                    <option value="Wi-Fi 6E/7">Wi-Fi 6E / 7</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="velocidadeWifi">Porta Uplink LAN/WAN</label>
+                  <select id="velocidadeWifi" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium">
+                    <option value="Gigabit (10/100/1000)" selected>Gigabit (1 Gbps)</option>
+                    <option value="Fast Ethernet (10/100)">Fast (100 Mbps)</option>
+                    <option value="Multi-Gigabit (2.5G)">Multi-Gigabit (2.5G)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- NOVO MÓDULO: SWITCHES DE MESA / ILHAS DE TRABALHO -->
+          <div class="bg-indigo-50/60 p-3.5 rounded-xl border border-indigo-100 space-y-3">
+            <div class="flex justify-between items-center">
+              <h3 class="text-xs font-bold text-indigo-900 uppercase tracking-wider">Switches de Mesa / Ilhas</h3>
+              <select id="incluirSwitchMesa" onchange="alternarSwitchMesa()" class="bg-white border border-indigo-300 rounded px-2 py-0.5 text-xs text-indigo-900 font-semibold">
+                <option value="nao" selected>Não Incluir</option>
+                <option value="sim">Incluir no Projeto</option>
+              </select>
+            </div>
+
+            <div id="blocoCamposSwitchMesa" class="hidden space-y-2.5">
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="qtdSwitchMesa">Quantidade de Switches</label>
+                  <input type="number" id="qtdSwitchMesa" value="2" min="1" max="30" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-semibold" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="portasSwitchMesa">Portas por Switch</label>
+                  <select id="portasSwitchMesa" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium">
+                    <option value="5" selected>5 Portas</option>
+                    <option value="8">8 Portas</option>
+                    <option value="16">16 Portas</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="velocidadeSwitchMesa">Velocidade</label>
+                  <select id="velocidadeSwitchMesa" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium">
+                    <option value="Gigabit (10/100/1000)" selected>Gigabit (10/100/1000)</option>
+                    <option value="Fast Ethernet (10/100)">Fast Ethernet (10/100)</option>
+                    <option value="Multi-Gigabit (2.5G)">Multi-Gigabit (2.5G)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="alimentacaoSwitchMesa">Alimentação Elétrica</label>
+                  <select id="alimentacaoSwitchMesa" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium">
+                    <option value="Fonte DC Local" selected>Fonte DC (Tomada local)</option>
+                    <option value="PoE Passthrough">PoE Passthrough (Via rede)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Patch Cords e Identificação -->
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1" for="cenarioPC">Patch Cords Estação</label>
               <select id="cenarioPC" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium">
-                <option value="pronto" selected>Injetados de Fábrica (2,5m)</option>
-                <option value="custom">Montagem Manual em Campo</option>
+                <option value="pronto" selected>Injetados (2,5m)</option>
+                <option value="custom">Montagem Manual</option>
               </select>
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1" for="usarRotuladora">Rotuladora / Etiquetas</label>
               <select id="usarRotuladora" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium">
-                <option value="sim" selected>Sim (4 etiquetas/ponto)</option>
-                <option value="nao">Não orçar fitas</option>
+                <option value="sim" selected>Sim (4 etiq./ponto)</option>
+                <option value="nao">Não Orçar Fitas</option>
               </select>
             </div>
           </div>
@@ -189,7 +278,7 @@
         </form>
       </section>
 
-      <!-- RESULTADOS E QUANTITATIVOS (COLUNA DIREITA) -->
+      <!-- RESULTADOS E QUANTITATIVOS -->
       <section class="lg:col-span-7 space-y-6">
         
         <!-- CARDS DE RESUMO RÁPIDO -->
@@ -208,7 +297,7 @@
               <span id="resumoCaixas" class="text-lg font-bold text-blue-700">0 cx</span>
             </div>
             <div class="bg-white p-3 rounded-xl border border-blue-100 shadow-sm">
-              <span class="text-[11px] text-slate-500 block font-medium">Switches</span>
+              <span class="text-[11px] text-slate-500 block font-medium">Ativos de Rede</span>
               <span id="resumoSwitches" class="text-lg font-bold text-blue-700">0 un</span>
             </div>
             <div class="bg-white p-3 rounded-xl border border-blue-100 shadow-sm">
@@ -218,7 +307,7 @@
           </div>
         </div>
 
-        <!-- TABELA DETALHADA E SEGMENTADA -->
+        <!-- TABELA DETALHADA -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
           <div class="px-6 py-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-2 bg-slate-50/50">
             <div>
@@ -237,23 +326,23 @@
                 </tr>
               </thead>
               <tbody id="tabelaMateriais" class="divide-y divide-slate-100 text-xs sm:text-sm">
-                <!-- Inserido dinamicamente pelo JS -->
+                <!-- Preenchido dinamicamente via JS -->
               </tbody>
             </table>
           </div>
 
-          <!-- BOTÕES DE AÇÃO E EXPORTAÇÃO -->
+          <!-- BOTÕES DE AÇÃO -->
           <div class="p-4 bg-slate-50 border-t border-slate-100 flex flex-wrap gap-2 justify-end">
-            <button type="button" onclick="exportarCSV()" class="px-3.5 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5">
+            <button type="button" onclick="exportarCSV()" class="px-3.5 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
               📊 Baixar CSV
             </button>
-            <button type="button" onclick="compartilharWhatsApp()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5">
+            <button type="button" onclick="compartilharWhatsApp()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
               💬 WhatsApp
             </button>
-            <button type="button" onclick="copiarLista()" class="px-3.5 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5">
+            <button type="button" onclick="copiarLista()" class="px-3.5 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
               📋 Copiar Lista
             </button>
-            <button type="button" onclick="window.print()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5">
+            <button type="button" onclick="window.print()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
               🖨️ Imprimir / PDF
             </button>
           </div>
@@ -263,9 +352,7 @@
     </div>
   </main>
 
-  <!-- JAVASCRIPT DO MOTOR DE CÁLCULO E REGRAS -->
   <script>
-    // Alternância do tipo de medição métrica
     function alternarModoMedicao() {
       const modo = document.getElementById('tipoMedicao').value;
       const blocoAbsoluta = document.getElementById('blocoMetragemAbsoluta');
@@ -280,10 +367,28 @@
       }
     }
 
-    // Variável global para armazenar os itens do cálculo atual
+    function alternarWifi() {
+      const status = document.getElementById('incluirWifi').value;
+      const bloco = document.getElementById('blocoCamposWifi');
+      if (status === 'sim') {
+        bloco.classList.remove('hidden');
+      } else {
+        bloco.classList.add('hidden');
+      }
+    }
+
+    function alternarSwitchMesa() {
+      const status = document.getElementById('incluirSwitchMesa').value;
+      const bloco = document.getElementById('blocoCamposSwitchMesa');
+      if (status === 'sim') {
+        bloco.classList.remove('hidden');
+      } else {
+        bloco.classList.add('hidden');
+      }
+    }
+
     let itensCalculados = [];
 
-    // Execução principal do motor de cálculo
     function calcularMateriais() {
       const nomeProjeto = document.getElementById('nomeProjeto').value.trim() || "Projeto Sem Nome";
       const pontos = parseInt(document.getElementById('pontos').value) || 0;
@@ -300,8 +405,22 @@
       const cenarioPC = document.getElementById('cenarioPC').value;
       const usarRotuladora = document.getElementById('usarRotuladora').value;
 
+      // Variáveis Wi-Fi
+      const incluirWifi = document.getElementById('incluirWifi').value;
+      const qtdWifi = (incluirWifi === 'sim') ? (parseInt(document.getElementById('qtdWifi').value) || 0) : 0;
+      const tipoDispositivoWifi = document.getElementById('tipoDispositivoWifi').value;
+      const padraoWifi = document.getElementById('padraoWifi').value;
+      const velocidadeWifi = document.getElementById('velocidadeWifi').value;
+
+      // Variáveis Switches de Mesa / Ilhas
+      const incluirSwitchMesa = document.getElementById('incluirSwitchMesa').value;
+      const qtdSwitchMesa = (incluirSwitchMesa === 'sim') ? (parseInt(document.getElementById('qtdSwitchMesa').value) || 0) : 0;
+      const portasSwitchMesa = document.getElementById('portasSwitchMesa').value;
+      const velocidadeSwitchMesa = document.getElementById('velocidadeSwitchMesa').value;
+      const alimentacaoSwitchMesa = document.getElementById('alimentacaoSwitchMesa').value;
+
       if (pontos <= 0) {
-        alert("Por favor, informe uma quantidade válida de pontos ativos (> 0).");
+        alert("Informe uma quantidade válida de pontos ativos (> 0).");
         return;
       }
 
@@ -316,7 +435,7 @@
         metrosBase = pontos * distMedia;
       }
 
-      const metrosTotais = Math.ceil(metrosBase * (1 + (reserva / 100)));
+      const metrosTotais = Math.ceil(Number((metrosBase * (1 + (reserva / 100))).toFixed(2)));
       const caixasPuras = Math.ceil(metrosTotais / 305);
       let caixasFinal = caixasPuras;
       let notaCaixas = "Mínimo métrico estrito";
@@ -344,21 +463,30 @@
         ? "Reserva técnica para APs de teto, CFTV e manutenções"
         : "Confecção manual (inclui margem de 25% p/ perdas e refação)";
 
-      // 3. Ativos e Ocupação de Rack
+      // 3. Ativos Centrais de Rack
       const qtdPP = Math.ceil(pontos / padraoPP);
       const usPP = (padraoPP === 24) ? qtdPP * 1 : qtdPP * 2;
 
-      const portasNecessarias = Math.ceil(pontos * 1.20); // 20% de reserva
+      const portasNecessarias = Math.ceil(pontos * 1.20);
       const qtdSwitches = Math.ceil(portasNecessarias / portasSwitch);
       const totalPortasDisponiveis = qtdSwitches * portasSwitch;
       const usSwitches = qtdSwitches * 1;
 
-      const guias1U = qtdPP + qtdSwitches; // 1 guia horizontal por equipamento ativo/passivo
+      const guias1U = qtdPP + qtdSwitches;
       const usGuias = guias1U * 1;
-      const usBandejaNobreak = 3; // Estimativa padrão
-      const usOcupados = usPP + usSwitches + usGuias + usBandejaNobreak;
+      const usBandejaNobreak = 3;
 
-      const usComFolga = Math.ceil(usOcupados * 1.35); // 35% de folga estrutural
+      // 4. Régua de Tomadas PDU Rack 19" 1U
+      // Alimenta: switches do rack + roteadores de borda/rack (se houver) + 2 tomadas de serviço/modem
+      const roteadoresNoRack = (incluirWifi === 'sim' && tipoDispositivoWifi === 'Roteador Borda') ? qtdWifi : 0;
+      const tomadasNecessarias = qtdSwitches + roteadoresNoRack + 2;
+      const qtdReguas = Math.max(1, Math.ceil(tomadasNecessarias / 8));
+      const totalTomadasPDU = qtdReguas * 8;
+      const usReguaEnergia = qtdReguas * 1;
+
+      // Ocupação Total do Rack
+      const usOcupados = usPP + usSwitches + usGuias + usBandejaNobreak + usReguaEnergia;
+      const usComFolga = Math.ceil(usOcupados * 1.35);
       const tamanhosComerciaisRack = [6, 9, 12, 16, 24, 36, 44];
       let rackRecomendado = 44;
       for (let t of tamanhosComerciaisRack) {
@@ -372,17 +500,18 @@
       const usLivres = Math.max(0, rackRecomendado - usOcupados);
       const tampasCegas1U = usLivres > 0 ? usLivres : 1;
 
-      // 4. Consumíveis e Identificação
+      // 5. Consumíveis e Identificação
       const rolosVelcro = Math.max(1, Math.ceil(pontos / 24));
       const pacotesAbracadeiras = Math.max(1, Math.ceil(pontos / 24));
 
-      // Atualização dos cards de topo
+      // Atualização dos cards de resumo
+      const totalAtivos = qtdSwitches + (incluirWifi === 'sim' ? qtdWifi : 0) + (incluirSwitchMesa === 'sim' ? qtdSwitchMesa : 0);
       document.getElementById('resumoMetros').innerText = `${metrosTotais} m`;
       document.getElementById('resumoCaixas').innerText = `${caixasFinal} cx`;
-      document.getElementById('resumoSwitches').innerText = `${qtdSwitches} un`;
+      document.getElementById('resumoSwitches').innerText = `${totalAtivos} un`;
       document.getElementById('resumoRack').innerText = `${rackRecomendado} U`;
 
-      // Estruturação da Lista Categorizada
+      // Montagem da Lista Estruturada
       itensCalculados = [
         // GRUPO 1: CABEAMENTO HORIZONTAL
         {
@@ -416,44 +545,85 @@
           qtd: `${pontos} un`,
           emb: cenarioPC === 'pronto' ? "Cabos injetados e certificados de fábrica" : "Lances confeccionados em campo"
         },
-        // GRUPO 3: RACK E ATIVOS
+        // GRUPO 3: RACK, ENERGIA & ATIVOS CENTRAIS
         {
-          categoriaItem: "Infraestrutura de Rack & Ativos",
+          categoriaItem: "Infraestrutura de Rack, Energia & Ativos",
           desc: `Patch Panel ${padraoPP} Portas (${tipoPP === 'modular' ? 'Modular / Descarregado' : 'IDC 110'})`,
           qtd: `${qtdPP} un`,
           emb: `Ocupação: ${usPP}U no rack`
         },
         {
-          categoriaItem: "Infraestrutura de Rack & Ativos",
-          desc: `Switch de Rede ${portasSwitch}P ${velocidadeSwitch} (${gerenciamentoSwitch})`,
+          categoriaItem: "Infraestrutura de Rack, Energia & Ativos",
+          desc: `Switch de Rack ${portasSwitch}P ${velocidadeSwitch} (${gerenciamentoSwitch})`,
           qtd: `${qtdSwitches} un`,
-          emb: `Total: ${totalPortasDisponiveis} portas (atende ${portasNecessarias} portas c/ 20% folga)`
+          emb: `Total: ${totalPortasDisponiveis} portas (atende ${portasNecessarias} portas centrais c/ folga)`
         },
         {
-          categoriaItem: "Infraestrutura de Rack & Ativos",
+          categoriaItem: "Infraestrutura de Rack, Energia & Ativos",
           desc: `Patch Cord ${categoria} 0,5m / 1,0m (Manobra de Rack)`,
           qtd: `${pontos} un`,
           emb: "Cabos injetados de manobra curta direta Switch-PP"
         },
         {
-          categoriaItem: "Infraestrutura de Rack & Ativos",
+          categoriaItem: "Infraestrutura de Rack, Energia & Ativos",
           desc: `Guia de Cabos Horizontal 1U Fechada`,
           qtd: `${guias1U} un`,
           emb: "1U por equipamento ativo ou passivo de manobra"
         },
         {
-          categoriaItem: "Infraestrutura de Rack & Ativos",
+          categoriaItem: "Infraestrutura de Rack, Energia & Ativos",
+          desc: `Régua PDU 19" 8 Tomadas NBR 14136 10A/20A (1U)`,
+          qtd: `${qtdReguas} un`,
+          emb: `Total: ${totalTomadasPDU} tomadas (atende ${tomadasNecessarias} cargas de rack c/ reserva)`
+        },
+        {
+          categoriaItem: "Infraestrutura de Rack, Energia & Ativos",
           desc: `Tampa Cega 1U p/ Rack (Blanking Panel)`,
           qtd: `${tampasCegas1U} un`,
           emb: "Fechamento de Us ociosos, fluxo térmico e acabamento visual"
         },
         {
-          categoriaItem: "Infraestrutura de Rack & Ativos",
+          categoriaItem: "Infraestrutura de Rack, Energia & Ativos",
           desc: `${tipoRack} ${rackRecomendado}U Padrão 19"`,
           qtd: "1 un",
-          emb: `Ocupação: ${usOcupados}U | Recomendado c/ 35% expansão: ${rackRecomendado}U`
-        },
-        // GRUPO 4: IDENTIFICAÇÃO E ORGANIZAÇÃO
+          emb: `Ocupação real: ${usOcupados}U | Recomendado c/ 35% expansão: ${rackRecomendado}U`
+        }
+      ];
+
+      // GRUPO 4: DISPOSITIVOS WI-FI & BORDA
+      if (incluirWifi === 'sim' && qtdWifi > 0) {
+        itensCalculados.push({
+          categoriaItem: "Equipamentos Wi-Fi & Borda",
+          desc: `${tipoDispositivoWifi} ${padraoWifi} - Uplink ${velocidadeWifi}`,
+          qtd: `${qtdWifi} un`,
+          emb: "Alimentação via PoE ou fonte PDU (requer ponto de rede dedicado)"
+        });
+        itensCalculados.push({
+          categoriaItem: "Equipamentos Wi-Fi & Borda",
+          desc: `Patch Cord ${categoria} Certificado (Conexão Roteador/AP)`,
+          qtd: `${qtdWifi} un`,
+          emb: "Conexão na porta LAN do Switch ou Injetor PoE dedicado"
+        });
+      }
+
+      // GRUPO 5: SWITCHES DE MESA / ILHAS DE TRABALHO
+      if (incluirSwitchMesa === 'sim' && qtdSwitchMesa > 0) {
+        itensCalculados.push({
+          categoriaItem: "Ativos de Borda / Ilhas de Trabalho",
+          desc: `Switch de Mesa / Ilha ${portasSwitchMesa} Portas ${velocidadeSwitchMesa}`,
+          qtd: `${qtdSwitchMesa} un`,
+          emb: `Alimentação: ${alimentacaoSwitchMesa} (Distribuição de rede em ilha corporativa)`
+        });
+        itensCalculados.push({
+          categoriaItem: "Ativos de Borda / Ilhas de Trabalho",
+          desc: `Patch Cord ${categoria} 1,5m / 2,5m Injetado (Uplink de Ilha)`,
+          qtd: `${qtdSwitchMesa} un`,
+          emb: "Conexão entre a tomada de parede/ilha e a porta Uplink do switch de mesa"
+        });
+      }
+
+      // GRUPO 6: IDENTIFICAÇÃO E CONSUMÍVEIS
+      itensCalculados.push(
         {
           categoriaItem: "Identificação & Consumíveis",
           desc: `Fita de Velcro Organizadora (Rolo 3m a 5m)`,
@@ -466,9 +636,8 @@
           qtd: `${pacotesAbracadeiras} pct`,
           emb: "100 unidades por pacote (fixação em guias e infra mecânica)"
         }
-      ];
+      );
 
-      // Item opcional de rotuladora
       if (usarRotuladora === 'sim') {
         const totalEtiquetas = pontos * 4;
         const cartuchosFita = Math.max(1, Math.ceil(totalEtiquetas / 150));
@@ -483,7 +652,6 @@
       renderizarTabela();
     }
 
-    // Renderização com separadores de categoria
     function renderizarTabela() {
       const tbody = document.getElementById('tabelaMateriais');
       tbody.innerHTML = "";
@@ -510,7 +678,6 @@
       });
     }
 
-    // Copiar Texto Puro
     function copiarLista() {
       if (itensCalculados.length === 0) {
         alert("Execute o cálculo antes de copiar.");
@@ -533,7 +700,6 @@
       });
     }
 
-    // Compartilhar via WhatsApp
     function compartilharWhatsApp() {
       if (itensCalculados.length === 0) {
         alert("Execute o cálculo antes de compartilhar.");
@@ -558,7 +724,6 @@
       window.open(url, '_blank');
     }
 
-    // Exportar Planilha CSV
     function exportarCSV() {
       if (itensCalculados.length === 0) {
         alert("Execute o cálculo antes de exportar.");
@@ -581,28 +746,23 @@
       document.body.removeChild(link);
     }
 
-    // Persistência no LocalStorage
     function salvarProjetoLocal() {
-      const dados = {
-        nomeProjeto: document.getElementById('nomeProjeto').value,
-        pontos: document.getElementById('pontos').value,
-        categoria: document.getElementById('categoria').value,
-        blindagem: document.getElementById('blindagem').value,
-        tipoMedicao: document.getElementById('tipoMedicao').value,
-        metragemAbsoluta: document.getElementById('metragemAbsoluta').value,
-        distanciaMedia: document.getElementById('distanciaMedia').value,
-        reserva: document.getElementById('reserva').value,
-        modoPuxamento: document.getElementById('modoPuxamento').value,
-        padraoPP: document.getElementById('padraoPP').value,
-        tipoPP: document.getElementById('tipoPP').value,
-        portasSwitch: document.getElementById('portasSwitch').value,
-        velocidadeSwitch: document.getElementById('velocidadeSwitch').value,
-        gerenciamentoSwitch: document.getElementById('gerenciamentoSwitch').value,
-        cenarioPC: document.getElementById('cenarioPC').value,
-        usarRotuladora: document.getElementById('usarRotuladora').value
-      };
+      const ids = [
+        'nomeProjeto', 'pontos', 'categoria', 'blindagem', 'tipoMedicao',
+        'metragemAbsoluta', 'distanciaMedia', 'reserva', 'modoPuxamento',
+        'padraoPP', 'tipoPP', 'portasSwitch', 'velocidadeSwitch',
+        'gerenciamentoSwitch', 'incluirWifi', 'qtdWifi', 'tipoDispositivoWifi',
+        'padraoWifi', 'velocidadeWifi', 'incluirSwitchMesa', 'qtdSwitchMesa',
+        'portasSwitchMesa', 'velocidadeSwitchMesa', 'alimentacaoSwitchMesa',
+        'cenarioPC', 'usarRotuladora'
+      ];
+      const dados = {};
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) dados[id] = el.value;
+      });
       localStorage.setItem('netestimator_projeto', JSON.stringify(dados));
-      alert("✅ Vistoria salva no navegador! Seus dados não serão perdidos.");
+      alert("✅ Vistoria salva no navegador!");
     }
 
     function carregarProjetoLocal() {
@@ -621,16 +781,17 @@
     }
 
     function limparFormulario() {
-      if (confirm("Deseja realmente redefinir o formulário?")) {
+      if (confirm("Deseja redefinir o formulário?")) {
         localStorage.removeItem('netestimator_projeto');
         location.reload();
       }
     }
 
-    // Inicialização na carga da página
     window.onload = function() {
       carregarProjetoLocal();
       alternarModoMedicao();
+      alternarWifi();
+      alternarSwitchMesa();
       calcularMateriais();
     };
   </script>
