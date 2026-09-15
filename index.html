@@ -3,394 +3,564 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NetEstimator v1.4 - Dimensionamento de Infraestrutura de Redes</title>
+  <title>InfraSpec v2.1 - Especificação Técnica e Quantitativo de Redes</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     body { font-family: 'Inter', sans-serif; }
+
+    /* Estilos Exclusivos para Impressão / PDF */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 12mm 10mm;
+      }
+      body {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        font-size: 11px !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-only {
+        display: block !important;
+      }
+      .break-inside-avoid {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      table {
+        font-size: 10.5px !important;
+      }
+      th, td {
+        padding: 5px 8px !important;
+      }
+      .shadow-sm, .shadow-md, .shadow-lg {
+        box-shadow: none !important;
+      }
+      .border, .border-slate-200 {
+        border-color: #cbd5e1 !important;
+      }
+    }
+
+    @media screen {
+      .print-only {
+        display: none !important;
+      }
+    }
+
+    /* Ícone giratório do acordeão nativo */
+    details > summary {
+      list-style: none;
+    }
+    details > summary::-webkit-details-marker {
+      display: none;
+    }
+    details[open] summary .accordion-icon {
+      transform: rotate(180deg);
+    }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen">
+<body class="bg-slate-50 text-slate-800 min-h-screen antialiased flex flex-col justify-between">
 
-  <!-- CABEÇALHO -->
-  <header class="bg-slate-900 text-white py-5 border-b border-slate-800 shadow-sm sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-3">
-      <div>
-        <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-          <span class="text-blue-500">⚡ NetEstimator</span>
-          <span class="text-xs bg-blue-900/80 text-blue-300 font-semibold px-2 py-0.5 rounded border border-blue-700">v1.4 MVP</span>
-        </h1>
-        <p class="text-xs text-slate-400 mt-0.5">Motor de Engenharia, Energia, Borda e Materiais de Infraestrutura</p>
+  <!-- CABEÇALHO DO APLICATIVO (OCULTO NA IMPRESSÃO) -->
+  <header class="no-print bg-slate-900 text-white py-4 border-b border-slate-800 shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+      <div class="flex items-center gap-3">
+        <div class="bg-blue-600 p-2 rounded-xl text-white font-black text-lg leading-none">IS</div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+            InfraSpec
+            <span class="text-xs bg-blue-900/80 text-blue-300 font-semibold px-2 py-0.5 rounded border border-blue-700">
+              v2.1 Engenharia
+            </span>
+          </h1>
+          <p class="text-xs text-slate-400">Levantamento Quantitativo e Especificação Física de Cabeamento Estruturado</p>
+        </div>
       </div>
       <div class="flex items-center gap-2">
-        <button type="button" onclick="salvarProjetoLocal()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg px-3 py-1.5 font-medium transition flex items-center gap-1.5 cursor-pointer">
+        <button type="button" onclick="salvarProjetoLocal()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg px-3 py-1.5 font-medium transition flex items-center gap-1.5 cursor-pointer shadow-sm">
           💾 Salvar Vistoria
         </button>
         <button type="button" onclick="limparFormulario()" class="text-xs bg-slate-800 hover:bg-rose-950 text-slate-300 hover:text-rose-200 border border-slate-700 rounded-lg px-2.5 py-1.5 font-medium transition cursor-pointer">
-          ↺ Limpar
+          🗑️ Redefinir
         </button>
       </div>
     </div>
   </header>
 
   <!-- CONTEÚDO PRINCIPAL -->
-  <main class="max-w-6xl mx-auto px-4 py-8">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow">
+    
+    <!-- CABEÇALHO DO RELATÓRIO (EXCLUSIVO PARA IMPRESSÃO / PDF) -->
+    <section class="print-only mb-6 border-b-2 border-slate-800 pb-4">
+      <div class="flex justify-between items-start">
+        <div>
+          <h1 class="text-2xl font-black tracking-tight text-slate-900 uppercase">InfraSpec</h1>
+          <p class="text-xs font-bold text-blue-800 uppercase tracking-wider">Relatório Técnico Quantitativo de Materiais</p>
+          <p class="text-[10px] text-slate-500 mt-1" id="printDataEmissao"></p>
+        </div>
+        <div class="text-right text-[11px] text-slate-600">
+          <p class="font-bold text-slate-800" id="printNomeEmpresa">Empresa de Engenharia / TI</p>
+          <p id="printRespTecnico">Resp: Técnico Especialista</p>
+          <p id="printRegistro">CFT/CREA: 0000000-0</p>
+          <p id="printContato">Contato: contato@empresa.com.br</p>
+        </div>
+      </div>
+
+      <div class="mt-4 grid grid-cols-2 gap-2 bg-slate-100 p-3 rounded-lg border border-slate-300 text-[11px]">
+        <div>
+          <span class="font-bold text-slate-700">Projeto / Obra:</span>
+          <span id="printNomeProjeto" class="font-semibold text-slate-900">Vistoria Padrão</span>
+        </div>
+        <div>
+          <span class="font-bold text-slate-700">Cliente / Contratante:</span>
+          <span id="printNomeCliente" class="font-semibold text-slate-900">Empresa Cliente</span>
+        </div>
+        <div class="col-span-2">
+          <span class="font-bold text-slate-700">Finalidade:</span>
+          <span class="text-slate-800">Especificação técnica física e quantitativo exato para aquisição de materiais.</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
       
-      <!-- FORMULÁRIO DE ENTRADA -->
-      <section class="lg:col-span-5 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-        <h2 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center justify-between">
-          <span>📋 Dados da Vistoria Técnica</span>
-          <span class="text-xs font-normal text-slate-500">Inputs de Campo</span>
-        </h2>
-
-        <form id="calcForm" class="space-y-4" onsubmit="event.preventDefault(); calcularMateriais();">
-          
-          <!-- Identificação do Projeto -->
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1" for="nomeProjeto">Nome do Projeto / Cliente</label>
-            <input type="text" id="nomeProjeto" value="Vistoria Técnica Padrão" placeholder="Ex: Matriz Corporativa - 3º Andar" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium" />
+      <!-- FORMULÁRIO DE ENTRADA (COLAPSÁVEL / ACORDEÃO - OCULTO NA IMPRESSÃO) -->
+      <section class="no-print lg:col-span-5 space-y-3">
+        <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+          <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Parâmetros de Entrada</span>
+          <div class="flex gap-2">
+            <button type="button" onclick="alternarTodosAcordeoes(true)" class="text-[11px] font-semibold text-blue-600 hover:text-blue-800">Expandir Todos</button>
+            <span class="text-slate-300">|</span>
+            <button type="button" onclick="alternarTodosAcordeoes(false)" class="text-[11px] font-semibold text-slate-500 hover:text-slate-700">Recolher</button>
           </div>
+        </div>
 
-          <!-- Quantidade de Pontos -->
-          <div>
-            <label class="block text-sm font-semibold text-slate-800 mb-1" for="pontos">Quantidade de Pontos Ativos</label>
-            <input type="number" id="pontos" value="24" min="1" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3.5 py-2 text-slate-900 focus:ring-2 focus:ring-blue-500 font-bold text-lg" />
-          </div>
+        <form id="calcForm" onsubmit="event.preventDefault(); calcularMateriais();" class="space-y-3">
 
-          <!-- Categoria e Blindagem -->
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1" for="categoria">Categoria</label>
-              <select id="categoria" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium">
-                <option value="Cat6" selected>Cat6 (1Gbps/10G)</option>
-                <option value="Cat5e">Cat5e (100M/1Gbps)</option>
-              </select>
+          <!-- 1. IDENTIFICAÇÃO E REGISTRO -->
+          <details class="accordion-item bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden" open>
+            <summary class="flex justify-between items-center px-4 py-3 cursor-pointer bg-slate-50 hover:bg-slate-100 transition font-bold text-xs text-slate-800 select-none">
+              <span class="flex items-center gap-2">📋 1. Identificação Técnica & Obra</span>
+              <span class="accordion-icon transition-transform duration-200 text-slate-400">▼</span>
+            </summary>
+            <div class="p-4 space-y-3 border-t border-slate-100 bg-white">
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="nomeEmpresa">Prestador / Técnico</label>
+                  <input type="text" id="nomeEmpresa" value="TechNet Infraestrutura" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="respTecnico">Responsável Técnico</label>
+                  <input type="text" id="respTecnico" value="Técnico de Redes" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="registroTecnico">Registro CFT / CREA</label>
+                  <input type="text" id="registroTecnico" value="CFT-BR 123456" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="contatoTecnico">Telefone / E-mail</label>
+                  <input type="text" id="contatoTecnico" value="(11) 98765-4321" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
+                </div>
+              </div>
+              <div class="border-t border-slate-100 pt-2 grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="nomeCliente">Cliente / Razão Social</label>
+                  <input type="text" id="nomeCliente" value="Clínica Médica Exemplo" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="nomeProjeto">Nome do Projeto / Local</label>
+                  <input type="text" id="nomeProjeto" value="Andar Operacional - Bloco B" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
+                </div>
+              </div>
             </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1" for="blindagem">Blindagem</label>
-              <select id="blindagem" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium">
-                <option value="UTP" selected>UTP (Sem blindagem)</option>
-                <option value="FTP">FTP (Blindado)</option>
-              </select>
-            </div>
-          </div>
+          </details>
 
-          <!-- Modo de Medição de Cabeamento -->
-          <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1" for="tipoMedicao">Modo de Levantamento Métrico</label>
-              <select id="tipoMedicao" onchange="alternarModoMedicao()" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium">
-                <option value="absoluta" selected>Metragem Absoluta (Rota levantada)</option>
-                <option value="media">Distância Média por Ponto</option>
-              </select>
-            </div>
-
-            <div id="blocoMetragemAbsoluta">
-              <label class="block text-xs font-semibold text-slate-600 mb-1" for="metragemAbsoluta">Metragem Total Medida (m)</label>
-              <input type="number" id="metragemAbsoluta" value="350" min="1" step="1" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm text-slate-900 font-medium" />
-            </div>
-
-            <div id="blocoDistanciaMedia" class="hidden">
-              <label class="block text-xs font-semibold text-slate-600 mb-1" for="distanciaMedia">Distância Média Linear (m/ponto)</label>
-              <input type="number" id="distanciaMedia" value="20" min="1" step="0.5" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm text-slate-900 font-medium" />
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1" for="reserva">Reserva Técnica / Curvaturas (%)</label>
-              <input type="number" id="reserva" value="15" min="0" max="50" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm text-slate-900 font-medium" />
-            </div>
-          </div>
-
-          <!-- Lançamento de Cabos -->
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1" for="modoPuxamento">Método de Passagem dos Cabos</label>
-            <select id="modoPuxamento" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium">
-              <option value="pura">Divisão Métrica Direta</option>
-              <option value="2" selected>Lançamento Paralelo (Puxar 2 cabos juntos)</option>
-              <option value="3">Lançamento Paralelo (Puxar 3 cabos juntos)</option>
-              <option value="4">Lançamento Paralelo (Puxar 4 cabos juntos)</option>
-            </select>
-          </div>
-
-          <!-- Patch Panel -->
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1" for="padraoPP">Densidade Patch Panel</label>
-              <select id="padraoPP" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium">
-                <option value="24" selected>24 Portas (1U)</option>
-                <option value="48">48 Portas (2U)</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1" for="tipoPP">Tipo de Conexão PP</label>
-              <select id="tipoPP" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium">
-                <option value="modular" selected>Modular (Descarregado)</option>
-                <option value="idc">Convencional (IDC 110)</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Switches de Rack (Ativos Centrais) -->
-          <div class="bg-blue-50/60 p-3.5 rounded-xl border border-blue-100 space-y-3">
-            <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider">Switches de Rack (Centrais)</h3>
-            <div class="grid grid-cols-3 gap-2">
+          <!-- 2. PONTOS & CABEAMENTO HORIZONTAL -->
+          <details class="accordion-item bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden" open>
+            <summary class="flex justify-between items-center px-4 py-3 cursor-pointer bg-slate-50 hover:bg-slate-100 transition font-bold text-xs text-slate-800 select-none">
+              <span class="flex items-center gap-2">🔌 2. Pontos & Cabeamento Horizontal</span>
+              <span class="accordion-icon transition-transform duration-200 text-slate-400">▼</span>
+            </summary>
+            <div class="p-4 space-y-3 border-t border-slate-100 bg-white">
               <div>
-                <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="portasSwitch">Portas</label>
-                <select id="portasSwitch" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium">
-                  <option value="8">8P</option>
-                  <option value="16">16P</option>
-                  <option value="24" selected>24P</option>
-                  <option value="48">48P</option>
-                </select>
+                <label class="block text-xs font-bold text-slate-800 mb-1" for="pontos">Quantidade de Pontos Ativos RJ45</label>
+                <input type="number" id="pontos" value="24" min="1" required class="w-full bg-blue-50/50 border border-blue-300 rounded-lg px-3 py-2 text-slate-900 focus:ring-2 focus:ring-blue-500 font-bold text-lg" />
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="categoria">Categoria do Cabo</label>
+                  <select id="categoria" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium">
+                    <option value="Cat6" selected>Cat.6 (Gigabit/10G 55m)</option>
+                    <option value="Cat5e">Cat.5e (Fast/Gigabit)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="blindagem">Blindagem Mecânica</label>
+                  <select id="blindagem" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium">
+                    <option value="UTP" selected>UTP (Sem blindagem)</option>
+                    <option value="FTP">FTP (Blindado a fita)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2.5">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="tipoMedicao">Modo de Levantamento Métrica</label>
+                  <select id="tipoMedicao" onchange="alternarModoMedicao()" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium">
+                    <option value="absoluta" selected>Metragem Absoluta da Planta (m)</option>
+                    <option value="media">Distância Média por Ponto (m)</option>
+                  </select>
+                </div>
+                <div id="blocoMetragemAbsoluta">
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1" for="metragemAbsoluta">Soma dos Lances na Planta (m)</label>
+                  <input type="number" id="metragemAbsoluta" value="350" min="1" step="1" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
+                </div>
+                <div id="blocoDistanciaMedia" class="hidden">
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1" for="distanciaMedia">Distância Média do Ponto ao Rack (m)</label>
+                  <input type="number" id="distanciaMedia" value="20" min="1" step="0.5" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1" for="reserva">Margem Técnica de Curvas / Subidas (%)</label>
+                  <input type="number" id="reserva" value="15" min="0" max="50" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
+                </div>
               </div>
               <div>
-                <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="velocidadeSwitch">Velocidade</label>
-                <select id="velocidadeSwitch" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium">
-                  <option value="10/100/1000" selected>Gigabit</option>
-                  <option value="10/100">Fast 10/100</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="gerenciamentoSwitch">Gerenciável</label>
-                <select id="gerenciamentoSwitch" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium">
-                  <option value="Gerenciável" selected>Sim (L2/L3)</option>
-                  <option value="Não Gerenciável">Não</option>
+                <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="modoPuxamento">Lançamento de Cabos Simultâneos (Puxamento)</label>
+                <select id="modoPuxamento" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium">
+                  <option value="pura">Divisão Métrica Pura (Sem piso de simultaneidade)</option>
+                  <option value="2" selected>2 Cabos Simultâneos (Mínimo 2 carretéis abertos)</option>
+                  <option value="3">3 Cabos Simultâneos (Mínimo 3 carretéis abertos)</option>
+                  <option value="4">4 Cabos Simultâneos (Mínimo 4 carretéis abertos)</option>
                 </select>
               </div>
             </div>
-          </div>
+          </details>
 
-          <!-- MÓDULO ROTEADORES / ACCESS POINTS WI-FI -->
-          <div class="bg-emerald-50/60 p-3.5 rounded-xl border border-emerald-100 space-y-3">
-            <div class="flex justify-between items-center">
-              <h3 class="text-xs font-bold text-emerald-900 uppercase tracking-wider">Roteadores / Wi-Fi</h3>
-              <select id="incluirWifi" onchange="alternarWifi()" class="bg-white border border-emerald-300 rounded px-2 py-0.5 text-xs text-emerald-900 font-semibold">
-                <option value="sim" selected>Incluir no Projeto</option>
-                <option value="nao">Não Incluir</option>
-              </select>
-            </div>
-
-            <div id="blocoCamposWifi" class="space-y-2.5">
+          <!-- 3. RACK, ENERGIA & ATIVOS CENTRAIS -->
+          <details class="accordion-item bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <summary class="flex justify-between items-center px-4 py-3 cursor-pointer bg-slate-50 hover:bg-slate-100 transition font-bold text-xs text-slate-800 select-none">
+              <span class="flex items-center gap-2">🗄️ 3. Rack, Patch Panels & Ativos de Rack</span>
+              <span class="accordion-icon transition-transform duration-200 text-slate-400">▼</span>
+            </summary>
+            <div class="p-4 space-y-3 border-t border-slate-100 bg-white">
               <div class="grid grid-cols-2 gap-2">
                 <div>
-                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="qtdWifi">Quantidade APs / Roteadores</label>
-                  <input type="number" id="qtdWifi" value="2" min="1" max="50" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-semibold" />
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="padraoPP">Portas do Patch Panel</label>
+                  <select id="padraoPP" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium">
+                    <option value="24" selected>24 Portas (1U)</option>
+                    <option value="48">48 Portas (2U)</option>
+                  </select>
                 </div>
                 <div>
-                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="tipoDispositivoWifi">Tipo de Equipamento</label>
-                  <select id="tipoDispositivoWifi" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium">
-                    <option value="AP Teto/Parede" selected>AP Corporativo (Teto)</option>
-                    <option value="Roteador Borda">Roteador Wi-Fi Mesa/Rack</option>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="tipoPP">Tipo de Patch Panel</label>
+                  <select id="tipoPP" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium">
+                    <option value="modular" selected>Modular / Descarregado</option>
+                    <option value="idc">Convencional IDC 110</option>
                   </select>
                 </div>
               </div>
+              <div class="bg-blue-50/60 p-3 rounded-lg border border-blue-100 space-y-2">
+                <span class="text-[10px] font-bold text-blue-900 uppercase tracking-wider block">Switches Centrais (Rack)</span>
+                <div class="grid grid-cols-3 gap-1.5">
+                  <div>
+                    <label class="block text-[10px] font-semibold text-slate-700 mb-0.5" for="portasSwitch">Portas</label>
+                    <select id="portasSwitch" class="w-full bg-white border border-slate-300 rounded px-1.5 py-1 text-xs text-slate-900">
+                      <option value="8">8P</option>
+                      <option value="16">16P</option>
+                      <option value="24" selected>24P</option>
+                      <option value="48">48P</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-semibold text-slate-700 mb-0.5" for="velocidadeSwitch">Velocidade</label>
+                    <select id="velocidadeSwitch" class="w-full bg-white border border-slate-300 rounded px-1.5 py-1 text-xs text-slate-900">
+                      <option value="Gigabit" selected>Gigabit</option>
+                      <option value="Fast">Fast 10/100</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-semibold text-slate-700 mb-0.5" for="gerenciamentoSwitch">Gestão</label>
+                    <select id="gerenciamentoSwitch" class="w-full bg-white border border-slate-300 rounded px-1.5 py-1 text-xs text-slate-900">
+                      <option value="Gerenciável" selected>Gerenc.</option>
+                      <option value="Não Gerenciável">Não Ger.</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </details>
 
+          <!-- 4. ATIVOS DE BORDA (WI-FI & ILHAS) -->
+          <details class="accordion-item bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <summary class="flex justify-between items-center px-4 py-3 cursor-pointer bg-slate-50 hover:bg-slate-100 transition font-bold text-xs text-slate-800 select-none">
+              <span class="flex items-center gap-2">📡 4. Wi-Fi & Switches de Mesa/Ilha</span>
+              <span class="accordion-icon transition-transform duration-200 text-slate-400">▼</span>
+            </summary>
+            <div class="p-4 space-y-3 border-t border-slate-100 bg-white">
+              <!-- Módulo Wi-Fi -->
+              <div class="bg-emerald-50/60 p-3 rounded-lg border border-emerald-100 space-y-2">
+                <div class="flex justify-between items-center">
+                  <span class="text-[11px] font-bold text-emerald-900 uppercase">Pontos de Acesso Wi-Fi / AP</span>
+                  <select id="incluirWifi" onchange="alternarWifi()" class="bg-white border border-emerald-300 rounded px-2 py-0.5 text-xs text-emerald-900 font-semibold">
+                    <option value="sim" selected>Sim</option>
+                    <option value="nao">Não</option>
+                  </select>
+                </div>
+                <div id="blocoCamposWifi" class="space-y-2">
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <label class="block text-[10px] font-semibold text-slate-700 mb-0.5" for="qtdWifi">Quantidade</label>
+                      <input type="number" id="qtdWifi" value="2" min="1" max="50" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-900" />
+                    </div>
+                    <div>
+                      <label class="block text-[10px] font-semibold text-slate-700 mb-0.5" for="tipoDispositivoWifi">Tipo</label>
+                      <select id="tipoDispositivoWifi" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-900">
+                        <option value="AP Teto/Parede" selected>AP Teto/Parede</option>
+                        <option value="Roteador Borda">Roteador Borda Rack</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <label class="block text-[10px] font-semibold text-slate-700 mb-0.5" for="padraoWifi">Padrão</label>
+                      <select id="padraoWifi" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-900">
+                        <option value="Wi-Fi 6 (802.11ax)" selected>Wi-Fi 6</option>
+                        <option value="Wi-Fi 5 (802.11ac)">Wi-Fi 5</option>
+                        <option value="Wi-Fi 6E/7">Wi-Fi 6E/7</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-[10px] font-semibold text-slate-700 mb-0.5" for="velocidadeWifi">Porta Uplink</label>
+                      <select id="velocidadeWifi" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-900">
+                        <option value="Gigabit" selected>Gigabit</option>
+                        <option value="Fast">Fast 10/100</option>
+                        <option value="2.5G">Multi-Gigabit 2.5G</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Módulo Switch de Mesa -->
+              <div class="bg-indigo-50/60 p-3 rounded-lg border border-indigo-100 space-y-2">
+                <div class="flex justify-between items-center">
+                  <span class="text-[11px] font-bold text-indigo-900 uppercase">Switches de Mesa / Ilha</span>
+                  <select id="incluirSwitchMesa" onchange="alternarSwitchMesa()" class="bg-white border border-indigo-300 rounded px-2 py-0.5 text-xs text-indigo-900 font-semibold">
+                    <option value="nao" selected>Não</option>
+                    <option value="sim">Sim</option>
+                  </select>
+                </div>
+                <div id="blocoCamposSwitchMesa" class="hidden space-y-2">
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <label class="block text-[10px] font-semibold text-slate-700 mb-0.5" for="qtdSwitchMesa">Qtd Switches</label>
+                      <input type="number" id="qtdSwitchMesa" value="2" min="1" max="30" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-900" />
+                    </div>
+                    <div>
+                      <label class="block text-[10px] font-semibold text-slate-700 mb-0.5" for="portasSwitchMesa">Portas</label>
+                      <select id="portasSwitchMesa" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-900">
+                        <option value="5" selected>5 Portas</option>
+                        <option value="8">8 Portas</option>
+                        <option value="16">16 Portas</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <label class="block text-[10px] font-semibold text-slate-700 mb-0.5" for="velocidadeSwitchMesa">Velocidade</label>
+                      <select id="velocidadeSwitchMesa" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-900">
+                        <option value="Gigabit" selected>Gigabit</option>
+                        <option value="Fast">Fast 10/100</option>
+                        <option value="2.5G">2.5G</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-[10px] font-semibold text-slate-700 mb-0.5" for="alimentacaoSwitchMesa">Alimentação</label>
+                      <select id="alimentacaoSwitchMesa" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-900">
+                        <option value="Fonte DC Local" selected>Fonte DC Local</option>
+                        <option value="PoE Passthrough">PoE Passthrough</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <!-- 5. CONECTIVIDADE & CONSUMÍVEIS -->
+          <details class="accordion-item bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <summary class="flex justify-between items-center px-4 py-3 cursor-pointer bg-slate-50 hover:bg-slate-100 transition font-bold text-xs text-slate-800 select-none">
+              <span class="flex items-center gap-2">🏷️ 5. Patch Cords & Consumíveis</span>
+              <span class="accordion-icon transition-transform duration-200 text-slate-400">▼</span>
+            </summary>
+            <div class="p-4 space-y-3 border-t border-slate-100 bg-white">
               <div class="grid grid-cols-2 gap-2">
                 <div>
-                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="padraoWifi">Geração Wi-Fi</label>
-                  <select id="padraoWifi" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium">
-                    <option value="Wi-Fi 6 (802.11ax)" selected>Wi-Fi 6 (AX)</option>
-                    <option value="Wi-Fi 5 (802.11ac)">Wi-Fi 5 (AC)</option>
-                    <option value="Wi-Fi 6E/7">Wi-Fi 6E / 7</option>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="cenarioPC">Patch Cords de Posto</label>
+                  <select id="cenarioPC" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium">
+                    <option value="pronto" selected>Prontos (2,5m injetados)</option>
+                    <option value="custom">Confecção em Campo</option>
                   </select>
                 </div>
                 <div>
-                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="velocidadeWifi">Porta Uplink LAN/WAN</label>
-                  <select id="velocidadeWifi" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium">
-                    <option value="Gigabit (10/100/1000)" selected>Gigabit (1 Gbps)</option>
-                    <option value="Fast Ethernet (10/100)">Fast (100 Mbps)</option>
-                    <option value="Multi-Gigabit (2.5G)">Multi-Gigabit (2.5G)</option>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="usarRotuladora">Identificação / Fitas</label>
+                  <select id="usarRotuladora" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium">
+                    <option value="sim" selected>Rotuladora (4 id/pt)</option>
+                    <option value="nao">Sem Fita Rotuladora</option>
                   </select>
                 </div>
               </div>
             </div>
-          </div>
+          </details>
 
-          <!-- NOVO MÓDULO: SWITCHES DE MESA / ILHAS DE TRABALHO -->
-          <div class="bg-indigo-50/60 p-3.5 rounded-xl border border-indigo-100 space-y-3">
-            <div class="flex justify-between items-center">
-              <h3 class="text-xs font-bold text-indigo-900 uppercase tracking-wider">Switches de Mesa / Ilhas</h3>
-              <select id="incluirSwitchMesa" onchange="alternarSwitchMesa()" class="bg-white border border-indigo-300 rounded px-2 py-0.5 text-xs text-indigo-900 font-semibold">
-                <option value="nao" selected>Não Incluir</option>
-                <option value="sim">Incluir no Projeto</option>
-              </select>
-            </div>
-
-            <div id="blocoCamposSwitchMesa" class="hidden space-y-2.5">
-              <div class="grid grid-cols-2 gap-2">
-                <div>
-                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="qtdSwitchMesa">Quantidade de Switches</label>
-                  <input type="number" id="qtdSwitchMesa" value="2" min="1" max="30" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-semibold" />
-                </div>
-                <div>
-                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="portasSwitchMesa">Portas por Switch</label>
-                  <select id="portasSwitchMesa" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium">
-                    <option value="5" selected>5 Portas</option>
-                    <option value="8">8 Portas</option>
-                    <option value="16">16 Portas</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-2 gap-2">
-                <div>
-                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="velocidadeSwitchMesa">Velocidade</label>
-                  <select id="velocidadeSwitchMesa" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium">
-                    <option value="Gigabit (10/100/1000)" selected>Gigabit (10/100/1000)</option>
-                    <option value="Fast Ethernet (10/100)">Fast Ethernet (10/100)</option>
-                    <option value="Multi-Gigabit (2.5G)">Multi-Gigabit (2.5G)</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="alimentacaoSwitchMesa">Alimentação Elétrica</label>
-                  <select id="alimentacaoSwitchMesa" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium">
-                    <option value="Fonte DC Local" selected>Fonte DC (Tomada local)</option>
-                    <option value="PoE Passthrough">PoE Passthrough (Via rede)</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Patch Cords e Identificação -->
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1" for="cenarioPC">Patch Cords Estação</label>
-              <select id="cenarioPC" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium">
-                <option value="pronto" selected>Injetados (2,5m)</option>
-                <option value="custom">Montagem Manual</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1" for="usarRotuladora">Rotuladora / Etiquetas</label>
-              <select id="usarRotuladora" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 font-medium">
-                <option value="sim" selected>Sim (4 etiq./ponto)</option>
-                <option value="nao">Não Orçar Fitas</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Botão Calcular -->
-          <button type="submit" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md transition duration-150 flex items-center justify-center gap-2 cursor-pointer">
-            <span>⚙️ Calcular Lista de Materiais</span>
+          <!-- BOTÃO CALCULAR -->
+          <button type="submit" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-bold py-3 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+            <span>⚡ Calcular Levantamento de Materiais</span>
           </button>
         </form>
       </section>
 
-      <!-- RESULTADOS E QUANTITATIVOS -->
-      <section class="lg:col-span-7 space-y-6">
+      <!-- RESULTADOS E ESPECIFICAÇÃO TÉCNICA -->
+      <section class="lg:col-span-7 space-y-4">
         
-        <!-- CARDS DE RESUMO RÁPIDO -->
-        <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 shadow-sm">
+        <!-- CARDS DE RESUMO DO DIMENSIONAMENTO -->
+        <div class="bg-blue-50/80 border border-blue-200 rounded-2xl p-4 shadow-sm break-inside-avoid">
           <div class="flex justify-between items-center mb-3">
-            <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider">Resumo Executivo do Dimensionamento</h3>
-            <span id="labelNomeProjeto" class="text-xs font-semibold text-blue-700 truncate max-w-[200px]"></span>
+            <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider">Resumo do Dimensionamento Físico</h3>
+            <span id="labelNomeProjeto" class="text-xs font-semibold text-blue-700 truncate max-w-[220px]">Andar Operacional - Bloco B</span>
           </div>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-            <div class="bg-white p-3 rounded-xl border border-blue-100 shadow-sm">
-              <span class="text-[11px] text-slate-500 block font-medium">Cabo Total</span>
-              <span id="resumoMetros" class="text-lg font-bold text-blue-700">0 m</span>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
+            <div class="bg-white p-2.5 rounded-xl border border-blue-100 shadow-sm">
+              <span class="text-[10px] text-slate-500 block font-medium">Metragem Cabos</span>
+              <span id="resumoMetros" class="text-base font-bold text-blue-700">-</span>
             </div>
-            <div class="bg-white p-3 rounded-xl border border-blue-100 shadow-sm">
-              <span class="text-[11px] text-slate-500 block font-medium">Caixas (305m)</span>
-              <span id="resumoCaixas" class="text-lg font-bold text-blue-700">0 cx</span>
+            <div class="bg-white p-2.5 rounded-xl border border-blue-100 shadow-sm">
+              <span class="text-[10px] text-slate-500 block font-medium">Carretéis (305m)</span>
+              <span id="resumoCaixas" class="text-base font-bold text-blue-700">-</span>
             </div>
-            <div class="bg-white p-3 rounded-xl border border-blue-100 shadow-sm">
-              <span class="text-[11px] text-slate-500 block font-medium">Ativos de Rede</span>
-              <span id="resumoSwitches" class="text-lg font-bold text-blue-700">0 un</span>
+            <div class="bg-white p-2.5 rounded-xl border border-blue-100 shadow-sm">
+              <span class="text-[10px] text-slate-500 block font-medium">Ativos de Rede</span>
+              <span id="resumoSwitches" class="text-base font-bold text-blue-700">-</span>
             </div>
-            <div class="bg-white p-3 rounded-xl border border-blue-100 shadow-sm">
-              <span class="text-[11px] text-slate-500 block font-medium">Gabinete Rack</span>
-              <span id="resumoRack" class="text-lg font-bold text-blue-700">0 U</span>
+            <div class="bg-white p-2.5 rounded-xl border border-blue-100 shadow-sm">
+              <span class="text-[10px] text-slate-500 block font-medium">Rack Sugerido</span>
+              <span id="resumoRack" class="text-base font-bold text-blue-700">-</span>
             </div>
           </div>
         </div>
 
-        <!-- TABELA DETALHADA -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-          <div class="px-6 py-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-2 bg-slate-50/50">
+        <!-- TABELA DE MATERIAIS QUANTITATIVOS -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden break-inside-avoid">
+          <div class="px-4 py-3 border-b border-slate-100 flex flex-wrap justify-between items-center gap-2 bg-slate-50/50">
             <div>
-              <h3 class="font-bold text-slate-900 text-sm">Lista Quantitativa de Engenharia</h3>
-              <p class="text-xs text-slate-500">Pronta para cotação e expedição de materiais</p>
+              <h3 class="font-bold text-slate-900 text-sm">Lista de Materiais para Aquisição</h3>
+              <p class="text-[11px] text-slate-500">Quantitativos calculados com base em normas de cabeamento estruturado</p>
             </div>
           </div>
 
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm text-slate-600">
-              <thead class="bg-slate-100/75 text-slate-700 font-semibold border-b border-slate-200 text-xs">
+            <table class="w-full text-left text-xs text-slate-600">
+              <thead class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200 text-[11px]">
                 <tr>
-                  <th class="py-3 px-4">Item / Descrição Técnica</th>
-                  <th class="py-3 px-4 w-28 text-center">Quantidade</th>
-                  <th class="py-3 px-4">Critério de Engenharia / Embalagem</th>
+                  <th class="py-2.5 px-3">Item / Subsistema</th>
+                  <th class="py-2.5 px-3 w-28 text-center">Quantidade</th>
+                  <th class="py-2.5 px-3">Aplicação / Especificação Técnica</th>
                 </tr>
               </thead>
-              <tbody id="tabelaMateriais" class="divide-y divide-slate-100 text-xs sm:text-sm">
-                <!-- Preenchido dinamicamente via JS -->
-              </tbody>
+              <tbody id="tabelaMateriais" class="divide-y divide-slate-100"></tbody>
             </table>
           </div>
 
-          <!-- BOTÕES DE AÇÃO -->
-          <div class="p-4 bg-slate-50 border-t border-slate-100 flex flex-wrap gap-2 justify-end">
-            <button type="button" onclick="exportarCSV()" class="px-3.5 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
-              📊 Baixar CSV
+          <!-- BOTÕES DE AÇÃO (OCULTOS NA IMPRESSÃO) -->
+          <div class="no-print p-3 bg-slate-50 border-t border-slate-100 flex flex-wrap gap-2 justify-end">
+            <button type="button" onclick="exportarCSV()" class="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1 cursor-pointer">
+              📥 Exportar CSV
             </button>
-            <button type="button" onclick="compartilharWhatsApp()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+            <button type="button" onclick="compartilharWhatsApp()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1 cursor-pointer">
               💬 WhatsApp
             </button>
-            <button type="button" onclick="copiarLista()" class="px-3.5 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+            <button type="button" onclick="copiarLista()" class="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1 cursor-pointer">
               📋 Copiar Lista
             </button>
-            <button type="button" onclick="window.print()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
-              🖨️ Imprimir / PDF
+            <button type="button" onclick="prepararEImprimir()" class="px-4 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+              🖨️ Imprimir / Salvar PDF
             </button>
           </div>
         </div>
+
+        <!-- TERMO DE RESPONSABILIDADE E ASSINATURAS (IMPRESSÃO / PDF) -->
+        <section class="print-only mt-6 space-y-6 break-inside-avoid">
+          <div class="p-3 bg-slate-50 border border-slate-300 rounded-lg text-[10px] text-slate-600 leading-relaxed">
+            <p class="font-bold text-slate-800 mb-1 uppercase tracking-wider">Termo de Levantamento Quantitativo & Diretrizes de Instalação</p>
+            <p>
+              O presente quantitativo de materiais foi dimensionado sob os preceitos das normas <strong>ABNT NBR 14565</strong> (Cabeamento estruturado para edifícios comerciais), <strong>ANSI/TIA-568</strong> e <strong>ISO/IEC 11801</strong>. A margem técnica assegura reserva operacional para curvaturas e limites mecânicos de tração durante o lançamento. Todos os materiais devem ser homologados pela ANATEL e adquiridos segundo as especificações descritas neste documento.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-8 pt-8 text-center text-[11px] text-slate-700">
+            <div>
+              <div class="border-t border-slate-800 pt-2 font-bold" id="printAssinaturaTecnico">Responsável Técnico / Projetista</div>
+              <p class="text-[10px] text-slate-500">CFT / CREA & Assinatura</p>
+            </div>
+            <div>
+              <div class="border-t border-slate-800 pt-2 font-bold" id="printAssinaturaCliente">Aceite e De Acordo do Cliente</div>
+              <p class="text-[10px] text-slate-500">Nome Legível / Carimbo da Empresa</p>
+            </div>
+          </div>
+        </section>
 
       </section>
     </div>
   </main>
 
+  <footer class="no-print bg-white border-t border-slate-200 py-3 text-center text-xs text-slate-500">
+    InfraSpec v2.1 • Motor de Especificação e Quantitativo de Infraestrutura de Redes • 100% Client-Side
+  </footer>
+
+  <!-- SCRIPT ENGINE V2.1 (QUANTITATIVO PURO) -->
   <script>
+    let itensCalculados = [];
+
     function alternarModoMedicao() {
       const modo = document.getElementById('tipoMedicao').value;
-      const blocoAbsoluta = document.getElementById('blocoMetragemAbsoluta');
-      const blocoMedia = document.getElementById('blocoDistanciaMedia');
-
+      const bAbs = document.getElementById('blocoMetragemAbsoluta');
+      const bMed = document.getElementById('blocoDistanciaMedia');
       if (modo === 'absoluta') {
-        blocoAbsoluta.classList.remove('hidden');
-        blocoMedia.classList.add('hidden');
+        bAbs.classList.remove('hidden');
+        bMed.classList.add('hidden');
       } else {
-        blocoAbsoluta.classList.add('hidden');
-        blocoMedia.classList.remove('hidden');
+        bAbs.classList.add('hidden');
+        bMed.classList.remove('hidden');
       }
     }
 
     function alternarWifi() {
       const status = document.getElementById('incluirWifi').value;
-      const bloco = document.getElementById('blocoCamposWifi');
-      if (status === 'sim') {
-        bloco.classList.remove('hidden');
-      } else {
-        bloco.classList.add('hidden');
-      }
+      const b = document.getElementById('blocoCamposWifi');
+      if (status === 'sim') b.classList.remove('hidden');
+      else b.classList.add('hidden');
     }
 
     function alternarSwitchMesa() {
       const status = document.getElementById('incluirSwitchMesa').value;
-      const bloco = document.getElementById('blocoCamposSwitchMesa');
-      if (status === 'sim') {
-        bloco.classList.remove('hidden');
-      } else {
-        bloco.classList.add('hidden');
-      }
+      const b = document.getElementById('blocoCamposSwitchMesa');
+      if (status === 'sim') b.classList.remove('hidden');
+      else b.classList.add('hidden');
     }
 
-    let itensCalculados = [];
+    function alternarTodosAcordeoes(abrir) {
+      document.querySelectorAll('.accordion-item').forEach(acc => {
+        acc.open = abrir;
+      });
+    }
 
+    // Motor de Cálculo Estritamente Quantitativo
     function calcularMateriais() {
-      const nomeProjeto = document.getElementById('nomeProjeto').value.trim() || "Projeto Sem Nome";
+      const nomeProjeto = document.getElementById('nomeProjeto').value.trim() || "Vistoria Sem Nome";
       const pontos = parseInt(document.getElementById('pontos').value) || 0;
       const categoria = document.getElementById('categoria').value;
       const blindagem = document.getElementById('blindagem').value;
@@ -404,15 +574,11 @@
       const gerenciamentoSwitch = document.getElementById('gerenciamentoSwitch').value;
       const cenarioPC = document.getElementById('cenarioPC').value;
       const usarRotuladora = document.getElementById('usarRotuladora').value;
-
-      // Variáveis Wi-Fi
       const incluirWifi = document.getElementById('incluirWifi').value;
       const qtdWifi = (incluirWifi === 'sim') ? (parseInt(document.getElementById('qtdWifi').value) || 0) : 0;
       const tipoDispositivoWifi = document.getElementById('tipoDispositivoWifi').value;
       const padraoWifi = document.getElementById('padraoWifi').value;
       const velocidadeWifi = document.getElementById('velocidadeWifi').value;
-
-      // Variáveis Switches de Mesa / Ilhas
       const incluirSwitchMesa = document.getElementById('incluirSwitchMesa').value;
       const qtdSwitchMesa = (incluirSwitchMesa === 'sim') ? (parseInt(document.getElementById('qtdSwitchMesa').value) || 0) : 0;
       const portasSwitchMesa = document.getElementById('portasSwitchMesa').value;
@@ -426,7 +592,7 @@
 
       document.getElementById('labelNomeProjeto').innerText = nomeProjeto;
 
-      // 1. Cabeamento Horizontal
+      // 1. Cabeamento Horizontal e Bobinas
       let metrosBase = 0;
       if (tipoMedicao === 'absoluta') {
         metrosBase = parseFloat(document.getElementById('metragemAbsoluta').value) || 0;
@@ -444,26 +610,23 @@
         const simultaneos = parseInt(modoPuxamento);
         if (simultaneos > caixasPuras) {
           caixasFinal = simultaneos;
-          notaCaixas = `Recomendado ${simultaneos} caixas abertas em paralelo p/ puxamento simultâneo`;
+          notaCaixas = `Recomendado ${simultaneos} bobinas abertas p/ puxamento em paralelo`;
         } else {
-          notaCaixas = `Atende ${simultaneos} caixas simultâneas (sobra ${caixasFinal - simultaneos} cx reserva)`;
+          notaCaixas = `Atende ${simultaneos} cabos simultâneos (sobra ${caixasFinal - simultaneos} cx)`;
         }
       }
 
-      // 2. Conectividade de Área de Trabalho e Rack
+      // 2. Conectividade e Tomadas
       const keystones = (tipoPP === 'modular') ? Math.ceil((pontos * 2) * 1.05) : pontos;
       const espelhos = Math.ceil(pontos / 2);
       const moduloCego = (pontos % 2 !== 0) ? 1 : 0;
-      
-      const conectoresRJ45Texto = (cenarioPC === 'pronto')
-        ? "1 pct (20 un)"
-        : `${Math.ceil((pontos * 2) * 1.25)} un`;
 
+      const conectoresRJ45Texto = (cenarioPC === 'pronto') ? "1 pct (20 un)" : `${Math.ceil((pontos * 2) * 1.25)} un`;
       const conectoresObs = (cenarioPC === 'pronto')
-        ? "Reserva técnica para APs de teto, CFTV e manutenções"
-        : "Confecção manual (inclui margem de 25% p/ perdas e refação)";
+        ? "Reserva técnica para APs de teto, CFTV e manutenções preventivas"
+        : "Confecção manual em campo (inclui 25% margem para refação e perdas)";
 
-      // 3. Ativos Centrais de Rack
+      // 3. Rack, Switches e PDUs
       const qtdPP = Math.ceil(pontos / padraoPP);
       const usPP = (padraoPP === 24) ? qtdPP * 1 : qtdPP * 2;
 
@@ -476,17 +639,15 @@
       const usGuias = guias1U * 1;
       const usBandejaNobreak = 3;
 
-      // 4. Régua de Tomadas PDU Rack 19" 1U
-      // Alimenta: switches do rack + roteadores de borda/rack (se houver) + 2 tomadas de serviço/modem
       const roteadoresNoRack = (incluirWifi === 'sim' && tipoDispositivoWifi === 'Roteador Borda') ? qtdWifi : 0;
       const tomadasNecessarias = qtdSwitches + roteadoresNoRack + 2;
       const qtdReguas = Math.max(1, Math.ceil(tomadasNecessarias / 8));
       const totalTomadasPDU = qtdReguas * 8;
       const usReguaEnergia = qtdReguas * 1;
 
-      // Ocupação Total do Rack
       const usOcupados = usPP + usSwitches + usGuias + usBandejaNobreak + usReguaEnergia;
       const usComFolga = Math.ceil(usOcupados * 1.35);
+
       const tamanhosComerciaisRack = [6, 9, 12, 16, 24, 36, 44];
       let rackRecomendado = 44;
       for (let t of tamanhosComerciaisRack) {
@@ -496,42 +657,40 @@
         }
       }
 
-      const tipoRack = rackRecomendado <= 16 ? "Mini-Rack de Parede" : "Rack Fechado de Piso";
+      const tipoRack = (rackRecomendado <= 16) ? "Mini-Rack de Parede" : "Rack Fechado de Piso";
       const usLivres = Math.max(0, rackRecomendado - usOcupados);
       const tampasCegas1U = usLivres > 0 ? usLivres : 1;
 
-      // 5. Consumíveis e Identificação
+      // 4. Consumíveis
       const rolosVelcro = Math.max(1, Math.ceil(pontos / 24));
       const pacotesAbracadeiras = Math.max(1, Math.ceil(pontos / 24));
-
-      // Atualização dos cards de resumo
       const totalAtivos = qtdSwitches + (incluirWifi === 'sim' ? qtdWifi : 0) + (incluirSwitchMesa === 'sim' ? qtdSwitchMesa : 0);
+
+      // Resumo executivo
       document.getElementById('resumoMetros').innerText = `${metrosTotais} m`;
       document.getElementById('resumoCaixas').innerText = `${caixasFinal} cx`;
       document.getElementById('resumoSwitches').innerText = `${totalAtivos} un`;
       document.getElementById('resumoRack').innerText = `${rackRecomendado} U`;
 
-      // Montagem da Lista Estruturada
+      // Montagem do Array de Materiais
       itensCalculados = [
-        // GRUPO 1: CABEAMENTO HORIZONTAL
         {
           categoriaItem: "Cabeamento Horizontal",
-          desc: `Cabo de Rede ${categoria} ${blindagem} 4 Pares Homologado`,
-          qtd: `${metrosTotais} m`,
-          emb: `${caixasFinal} cx de 305m (${notaCaixas})`
+          desc: `Cabo de Rede ${categoria} ${blindagem} 4 Pares Homologado Anatel`,
+          qtd: `${caixasFinal} cx`,
+          emb: `${metrosTotais}m calculados (${notaCaixas})`
         },
-        // GRUPO 2: CONECTIVIDADE & POSTOS
         {
           categoriaItem: "Conectividade & Tomadas",
           desc: `Keystone Fêmea RJ45 ${categoria} ${blindagem} (90°/180°)`,
           qtd: `${keystones} un`,
-          emb: tipoPP === 'modular' ? "Tomadas de parede + Patch Panel Modular (+5% margem)" : "Tomadas de parede"
+          emb: tipoPP === 'modular' ? "Tomadas de parede + Patch Panel Modular (+5% folga)" : "Tomadas de postos de trabalho"
         },
         {
           categoriaItem: "Conectividade & Tomadas",
-          desc: `Espelho de Parede 4x2 p/ 2 Conectores (Posto Duplo)`,
+          desc: "Espelho de Parede 4x2 p/ 2 Conectores (Posto Duplo)",
           qtd: `${espelhos} un`,
-          emb: moduloCego > 0 ? `Acompanha ${moduloCego} módulo(s) cego(s) p/ acabamento` : "Postos duplos padrão"
+          emb: moduloCego > 0 ? `Acompanha ${moduloCego} módulo cego para acabamento` : "Espelhos duplos padrão"
         },
         {
           categoriaItem: "Conectividade & Tomadas",
@@ -541,14 +700,13 @@
         },
         {
           categoriaItem: "Conectividade & Tomadas",
-          desc: `Patch Cord ${categoria} ${cenarioPC === 'pronto' ? '2,5m injetado' : 'Sob medida'} (Estação)`,
+          desc: `Patch Cord ${categoria} ${cenarioPC === 'pronto' ? '2,5m Injetado' : 'Sob Medida'} (Estação)`,
           qtd: `${pontos} un`,
-          emb: cenarioPC === 'pronto' ? "Cabos injetados e certificados de fábrica" : "Lances confeccionados em campo"
+          emb: cenarioPC === 'pronto' ? "Cabos injetados e certificados de fábrica" : "Lances confeccionados manualmente em campo"
         },
-        // GRUPO 3: RACK, ENERGIA & ATIVOS CENTRAIS
         {
           categoriaItem: "Infraestrutura de Rack, Energia & Ativos",
-          desc: `Patch Panel ${padraoPP} Portas (${tipoPP === 'modular' ? 'Modular / Descarregado' : 'IDC 110'})`,
+          desc: `Patch Panel ${padraoPP} Portas (${tipoPP === 'modular' ? 'Modular Descarregado' : 'IDC 110'})`,
           qtd: `${qtdPP} un`,
           emb: `Ocupação: ${usPP}U no rack`
         },
@@ -556,7 +714,7 @@
           categoriaItem: "Infraestrutura de Rack, Energia & Ativos",
           desc: `Switch de Rack ${portasSwitch}P ${velocidadeSwitch} (${gerenciamentoSwitch})`,
           qtd: `${qtdSwitches} un`,
-          emb: `Total: ${totalPortasDisponiveis} portas (atende ${portasNecessarias} portas centrais c/ folga)`
+          emb: `Total: ${totalPortasDisponiveis} portas (atende ${portasNecessarias} portas centrais c/ 20% expansão)`
         },
         {
           categoriaItem: "Infraestrutura de Rack, Energia & Ativos",
@@ -566,31 +724,31 @@
         },
         {
           categoriaItem: "Infraestrutura de Rack, Energia & Ativos",
-          desc: `Guia de Cabos Horizontal 1U Fechada`,
+          desc: "Guia de Cabos Horizontal 1U Fechada com Tampa",
           qtd: `${guias1U} un`,
           emb: "1U por equipamento ativo ou passivo de manobra"
         },
         {
           categoriaItem: "Infraestrutura de Rack, Energia & Ativos",
-          desc: `Régua PDU 19" 8 Tomadas NBR 14136 10A/20A (1U)`,
+          desc: 'Régua PDU 19" 8 Tomadas NBR 14136 10A/20A (1U)',
           qtd: `${qtdReguas} un`,
-          emb: `Total: ${totalTomadasPDU} tomadas (atende ${tomadasNecessarias} cargas de rack c/ reserva)`
+          emb: `Total: ${totalTomadasPDU} tomadas (atende ${tomadasNecessarias} cargas de rack c/ folga)`
         },
         {
           categoriaItem: "Infraestrutura de Rack, Energia & Ativos",
-          desc: `Tampa Cega 1U p/ Rack (Blanking Panel)`,
+          desc: "Tampa Cega 1U p/ Fechamento Térmico (Blanking Panel)",
           qtd: `${tampasCegas1U} un`,
-          emb: "Fechamento de Us ociosos, fluxo térmico e acabamento visual"
+          emb: "Vedação de Us ociosos, circulação térmica e acabamento estético"
         },
         {
           categoriaItem: "Infraestrutura de Rack, Energia & Ativos",
           desc: `${tipoRack} ${rackRecomendado}U Padrão 19"`,
           qtd: "1 un",
-          emb: `Ocupação real: ${usOcupados}U | Recomendado c/ 35% expansão: ${rackRecomendado}U`
+          emb: `Ocupação calculada: ${usOcupados}U | Sugerido c/ 35% folga: ${rackRecomendado}U`
         }
       ];
 
-      // GRUPO 4: DISPOSITIVOS WI-FI & BORDA
+      // Wi-Fi
       if (incluirWifi === 'sim' && qtdWifi > 0) {
         itensCalculados.push({
           categoriaItem: "Equipamentos Wi-Fi & Borda",
@@ -606,35 +764,35 @@
         });
       }
 
-      // GRUPO 5: SWITCHES DE MESA / ILHAS DE TRABALHO
+      // Switches de Mesa
       if (incluirSwitchMesa === 'sim' && qtdSwitchMesa > 0) {
         itensCalculados.push({
           categoriaItem: "Ativos de Borda / Ilhas de Trabalho",
           desc: `Switch de Mesa / Ilha ${portasSwitchMesa} Portas ${velocidadeSwitchMesa}`,
           qtd: `${qtdSwitchMesa} un`,
-          emb: `Alimentação: ${alimentacaoSwitchMesa} (Distribuição de rede em ilha corporativa)`
+          emb: `Alimentação: ${alimentacaoSwitchMesa} (Distribuição de rede em ilha)`
         });
         itensCalculados.push({
           categoriaItem: "Ativos de Borda / Ilhas de Trabalho",
           desc: `Patch Cord ${categoria} 1,5m / 2,5m Injetado (Uplink de Ilha)`,
           qtd: `${qtdSwitchMesa} un`,
-          emb: "Conexão entre a tomada de parede/ilha e a porta Uplink do switch de mesa"
+          emb: "Conexão entre a tomada de parede da ilha e a porta Uplink do Switch"
         });
       }
 
-      // GRUPO 6: IDENTIFICAÇÃO E CONSUMÍVEIS
+      // Consumíveis
       itensCalculados.push(
         {
           categoriaItem: "Identificação & Consumíveis",
-          desc: `Fita de Velcro Organizadora (Rolo 3m a 5m)`,
+          desc: "Fita de Velcro Organizadora (Rolo 3m a 5m)",
           qtd: `${rolosVelcro} rolo(s)`,
-          emb: "Feixes de cabos de dados (proibido enforca-gato direto no feixe)"
+          emb: "Feixes de cabos de dados (norma veda cinta plástica direta no feixe)"
         },
         {
           categoriaItem: "Identificação & Consumíveis",
-          desc: `Abraçadeiras Plásticas de Nylon 150mm (Cintas)`,
+          desc: "Abraçadeiras Plásticas de Nylon 150mm (Pacote com 100 un)",
           qtd: `${pacotesAbracadeiras} pct`,
-          emb: "100 unidades por pacote (fixação em guias e infra mecânica)"
+          emb: "Fixação exclusiva em esteiras, calhas e infraestrutura mecânica"
         }
       );
 
@@ -645,7 +803,7 @@
           categoriaItem: "Identificação & Consumíveis",
           desc: "Cartucho de Fita Laminada p/ Rotuladora Eletrônica",
           qtd: `${cartuchosFita} un`,
-          emb: `Estimativa p/ ${totalEtiquetas} identificações (4 por ponto: Ponta A, B, PP e Espelho)`
+          emb: `Atende aprox. ${totalEtiquetas} identificações (4 por ponto: Ponta A, B, PP e Tomada)`
         });
       }
 
@@ -655,27 +813,54 @@
     function renderizarTabela() {
       const tbody = document.getElementById('tabelaMateriais');
       tbody.innerHTML = "";
-
       let categoriaAtual = "";
 
       itensCalculados.forEach(item => {
         if (item.categoriaItem !== categoriaAtual) {
           categoriaAtual = item.categoriaItem;
           const trCat = document.createElement('tr');
-          trCat.className = "bg-slate-100/90 font-bold text-slate-800 text-[11px] uppercase tracking-wider";
-          trCat.innerHTML = `<td colspan="3" class="py-2 px-4 border-t border-b border-slate-200">${categoriaAtual}</td>`;
+          trCat.className = "bg-slate-100 font-bold text-slate-800 text-[10px] uppercase tracking-wider break-inside-avoid";
+          trCat.innerHTML = `<td colspan="3" class="py-2 px-3 border-t border-b border-slate-200">${categoriaAtual}</td>`;
           tbody.appendChild(trCat);
         }
 
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-blue-50/40 transition-colors";
+        tr.className = "hover:bg-blue-50/30 transition-colors break-inside-avoid";
         tr.innerHTML = `
-          <td class="py-2.5 px-4 font-semibold text-slate-800">${item.desc}</td>
-          <td class="py-2.5 px-4 text-center font-bold text-blue-700 bg-blue-50/30">${item.qtd}</td>
-          <td class="py-2.5 px-4 text-xs text-slate-500">${item.emb}</td>
+          <td class="py-2.5 px-3 font-semibold text-slate-800">${item.desc}</td>
+          <td class="py-2.5 px-3 text-center font-bold text-blue-700 bg-blue-50/20">${item.qtd}</td>
+          <td class="py-2.5 px-3 text-xs text-slate-500">${item.emb}</td>
         `;
         tbody.appendChild(tr);
       });
+    }
+
+    function prepararEImprimir() {
+      if (itensCalculados.length === 0) {
+        alert("Execute o cálculo antes de imprimir.");
+        return;
+      }
+
+      const nomeEmpresa = document.getElementById('nomeEmpresa').value.trim() || "Empresa de Infraestrutura";
+      const respTecnico = document.getElementById('respTecnico').value.trim() || "Projetista Responsável";
+      const registroTecnico = document.getElementById('registroTecnico').value.trim() || "CFT/CREA";
+      const contatoTecnico = document.getElementById('contatoTecnico').value.trim() || "";
+      const nomeCliente = document.getElementById('nomeCliente').value.trim() || "Cliente Contratante";
+      const nomeProjeto = document.getElementById('nomeProjeto').value.trim() || "Vistoria Técnica Padrão";
+
+      document.getElementById('printNomeEmpresa').innerText = nomeEmpresa;
+      document.getElementById('printRespTecnico').innerText = `Resp: ${respTecnico}`;
+      document.getElementById('printRegistro').innerText = `Registro: ${registroTecnico}`;
+      document.getElementById('printContato').innerText = `Contato: ${contatoTecnico}`;
+      document.getElementById('printNomeCliente').innerText = nomeCliente;
+      document.getElementById('printNomeProjeto').innerText = nomeProjeto;
+
+      const agora = new Date();
+      document.getElementById('printDataEmissao').innerText = `Emitido em: ${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR')} • InfraSpec Engine v2.1`;
+      document.getElementById('printAssinaturaTecnico').innerText = `${respTecnico} • ${registroTecnico}`;
+      document.getElementById('printAssinaturaCliente').innerText = `${nomeCliente}`;
+
+      window.print();
     }
 
     function copiarLista() {
@@ -684,9 +869,8 @@
         return;
       }
       const nomeProjeto = document.getElementById('nomeProjeto').value || "Projeto";
-      let texto = `*=== LISTA DE MATERIAIS - ${nomeProjeto.toUpperCase()} ===*\n\n`;
+      let texto = `*=== QUANTITATIVO TÉCNICO (INFRASPEC) - ${nomeProjeto.toUpperCase()} ===*\n`;
       let cat = "";
-
       itensCalculados.forEach(i => {
         if (i.categoriaItem !== cat) {
           cat = i.categoriaItem;
@@ -694,9 +878,8 @@
         }
         texto += `• ${i.desc}: ${i.qtd} (${i.emb})\n`;
       });
-
       navigator.clipboard.writeText(texto).then(() => {
-        alert("Lista copiada para a área de transferência!");
+        alert("Lista técnica copiada para a área de transferência!");
       });
     }
 
@@ -706,20 +889,17 @@
         return;
       }
       const nomeProjeto = document.getElementById('nomeProjeto').value || "Projeto";
-      let texto = `*⚡ NetEstimator - Lista de Materiais*\n`;
+      let texto = `*InfraSpec - Lista de Materiais Quantitativos*\n`;
       texto += `*Projeto:* ${nomeProjeto}\n\n`;
       let cat = "";
-
       itensCalculados.forEach(i => {
         if (i.categoriaItem !== cat) {
           cat = i.categoriaItem;
           texto += `\n*${cat.toUpperCase()}*\n`;
         }
-        texto += `▫️ *${i.desc}* -> ${i.qtd}\n   _${i.emb}_\n`;
+        texto += `• *${i.desc}* -> ${i.qtd}\n  _${i.emb}_\n`;
       });
-
-      texto += `\n_Dimensionado via NetEstimator MVP_`;
-
+      texto += `\n_Especificado via InfraSpec v2.1 (Engenharia)_`;
       const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
       window.open(url, '_blank');
     }
@@ -729,18 +909,16 @@
         alert("Execute o cálculo antes de exportar.");
         return;
       }
-      const nomeProjeto = document.getElementById('nomeProjeto').value || "NetEstimator_Materiais";
-      let csv = "Categoria;Item/Descricao;Quantidade;Observacao/Embalagem\n";
-
+      const nomeProjeto = document.getElementById('nomeProjeto').value || "InfraSpec_Materiais";
+      let csv = "Categoria;Item / Descricao;Quantidade;Aplicacao / Especificacao\n";
       itensCalculados.forEach(i => {
         csv += `"${i.categoriaItem}";"${i.desc}";"${i.qtd}";"${i.emb}"\n`;
       });
-
       const blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
       const url = URL.createObjectURL(blob);
       link.setAttribute("href", url);
-      link.setAttribute("download", `${nomeProjeto.replace(/\s+/g, '_')}_materiais.csv`);
+      link.setAttribute("download", `${nomeProjeto.replace(/\s+/g, '_')}_quantitativo.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -748,9 +926,10 @@
 
     function salvarProjetoLocal() {
       const ids = [
-        'nomeProjeto', 'pontos', 'categoria', 'blindagem', 'tipoMedicao',
-        'metragemAbsoluta', 'distanciaMedia', 'reserva', 'modoPuxamento',
-        'padraoPP', 'tipoPP', 'portasSwitch', 'velocidadeSwitch',
+        'nomeEmpresa', 'respTecnico', 'registroTecnico', 'contatoTecnico',
+        'nomeCliente', 'nomeProjeto', 'pontos', 'categoria', 'blindagem',
+        'tipoMedicao', 'metragemAbsoluta', 'distanciaMedia', 'reserva',
+        'modoPuxamento', 'padraoPP', 'tipoPP', 'portasSwitch', 'velocidadeSwitch',
         'gerenciamentoSwitch', 'incluirWifi', 'qtdWifi', 'tipoDispositivoWifi',
         'padraoWifi', 'velocidadeWifi', 'incluirSwitchMesa', 'qtdSwitchMesa',
         'portasSwitchMesa', 'velocidadeSwitchMesa', 'alimentacaoSwitchMesa',
@@ -761,12 +940,12 @@
         const el = document.getElementById(id);
         if (el) dados[id] = el.value;
       });
-      localStorage.setItem('netestimator_projeto', JSON.stringify(dados));
-      alert("✅ Vistoria salva no navegador!");
+      localStorage.setItem('infraspec_quantitativo_v2', JSON.stringify(dados));
+      alert("✅ Levantamento técnico salvo com sucesso!");
     }
 
     function carregarProjetoLocal() {
-      const salvo = localStorage.getItem('netestimator_projeto');
+      const salvo = localStorage.getItem('infraspec_quantitativo_v2') || localStorage.getItem('infraspec_projeto');
       if (salvo) {
         try {
           const dados = JSON.parse(salvo);
@@ -774,15 +953,16 @@
             const el = document.getElementById(key);
             if (el) el.value = dados[key];
           }
-        } catch(e) {
+        } catch (e) {
           console.error("Erro ao carregar dados locais", e);
         }
       }
     }
 
     function limparFormulario() {
-      if (confirm("Deseja redefinir o formulário?")) {
-        localStorage.removeItem('netestimator_projeto');
+      if (confirm("Deseja redefinir todo o formulário para os padrões de fábrica?")) {
+        localStorage.removeItem('infraspec_quantitativo_v2');
+        localStorage.removeItem('infraspec_projeto');
         location.reload();
       }
     }
