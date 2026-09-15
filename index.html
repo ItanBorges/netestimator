@@ -50,7 +50,7 @@
       }
     }
 
-    /* Ícone giratório do acordeão nativo */
+    /* Ícone giratório do acordeão */
     details > summary {
       list-style: none;
     }
@@ -84,7 +84,7 @@
           💾 Salvar Vistoria
         </button>
         <button type="button" onclick="limparFormulario()" class="text-xs bg-slate-800 hover:bg-rose-950 text-slate-300 hover:text-rose-200 border border-slate-700 rounded-lg px-2.5 py-1.5 font-medium transition cursor-pointer">
-          🗑️ Redefinir
+          🗑️ Limpar Campos
         </button>
       </div>
     </div>
@@ -102,32 +102,32 @@
           <p class="text-[10px] text-slate-500 mt-1" id="printDataEmissao"></p>
         </div>
         <div class="text-right text-[11px] text-slate-600">
-          <p class="font-bold text-slate-800" id="printNomeEmpresa">Empresa de Engenharia / TI</p>
-          <p id="printRespTecnico">Resp: Técnico Especialista</p>
-          <p id="printRegistro">CFT/CREA: 0000000-0</p>
-          <p id="printContato">Contato: contato@empresa.com.br</p>
+          <p class="font-bold text-slate-800" id="printNomeEmpresa">—</p>
+          <p id="printRespTecnico">Resp: —</p>
+          <p id="printRegistro">Registro: —</p>
+          <p id="printContato">Contato: —</p>
         </div>
       </div>
 
       <div class="mt-4 grid grid-cols-2 gap-2 bg-slate-100 p-3 rounded-lg border border-slate-300 text-[11px]">
         <div>
           <span class="font-bold text-slate-700">Projeto / Obra:</span>
-          <span id="printNomeProjeto" class="font-semibold text-slate-900">Vistoria Padrão</span>
+          <span id="printNomeProjeto" class="font-semibold text-slate-900">—</span>
         </div>
         <div>
           <span class="font-bold text-slate-700">Cliente / Contratante:</span>
-          <span id="printNomeCliente" class="font-semibold text-slate-900">Empresa Cliente</span>
+          <span id="printNomeCliente" class="font-semibold text-slate-900">—</span>
         </div>
         <div class="col-span-2">
           <span class="font-bold text-slate-700">Finalidade:</span>
-          <span class="text-slate-800">Especificação técnica física e quantitativo exato para aquisição de materiais.</span>
+          <span class="text-slate-800">Especificação técnica física e quantitativo para aquisição direta de materiais.</span>
         </div>
       </div>
     </section>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
       
-      <!-- FORMULÁRIO DE ENTRADA (COLAPSÁVEL / ACORDEÃO - OCULTO NA IMPRESSÃO) -->
+      <!-- FORMULÁRIO DE ENTRADA (COLAPSÁVEL - OCULTO NA IMPRESSÃO) -->
       <section class="no-print lg:col-span-5 space-y-3">
         <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
           <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Parâmetros de Entrada</span>
@@ -138,7 +138,7 @@
           </div>
         </div>
 
-        <form id="calcForm" onsubmit="event.preventDefault(); calcularMateriais();" class="space-y-3">
+        <form id="calcForm" onsubmit="event.preventDefault(); calcularMateriais(true);" class="space-y-3">
 
           <!-- 1. IDENTIFICAÇÃO E REGISTRO -->
           <details class="accordion-item bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden" open>
@@ -149,32 +149,32 @@
             <div class="p-4 space-y-3 border-t border-slate-100 bg-white">
               <div class="grid grid-cols-2 gap-2">
                 <div>
-                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="nomeEmpresa">Prestador / Técnico</label>
-                  <input type="text" id="nomeEmpresa" value="TechNet Infraestrutura" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="nomeEmpresa">Prestador / Empresa</label>
+                  <input type="text" id="nomeEmpresa" placeholder="Ex: Tech Solutions TI" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
                 </div>
                 <div>
                   <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="respTecnico">Responsável Técnico</label>
-                  <input type="text" id="respTecnico" value="Técnico de Redes" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
+                  <input type="text" id="respTecnico" placeholder="Ex: Nome do Técnico" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
                 </div>
               </div>
               <div class="grid grid-cols-2 gap-2">
                 <div>
-                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="registroTecnico">Registro CFT / CREA</label>
-                  <input type="text" id="registroTecnico" value="CFT-BR 123456" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="registroTecnico">Registro Profissional</label>
+                  <input type="text" id="registroTecnico" placeholder="Ex: CFT / CREA 000000" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
                 </div>
                 <div>
                   <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="contatoTecnico">Telefone / E-mail</label>
-                  <input type="text" id="contatoTecnico" value="(11) 98765-4321" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
+                  <input type="text" id="contatoTecnico" placeholder="Ex: (00) 00000-0000" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
                 </div>
               </div>
               <div class="border-t border-slate-100 pt-2 grid grid-cols-2 gap-2">
                 <div>
                   <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="nomeCliente">Cliente / Razão Social</label>
-                  <input type="text" id="nomeCliente" value="Clínica Médica Exemplo" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
+                  <input type="text" id="nomeCliente" placeholder="Ex: Nome do Cliente" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
                 </div>
                 <div>
                   <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="nomeProjeto">Nome do Projeto / Local</label>
-                  <input type="text" id="nomeProjeto" value="Andar Operacional - Bloco B" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
+                  <input type="text" id="nomeProjeto" placeholder="Ex: Matriz - 2º Andar" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
                 </div>
               </div>
             </div>
@@ -189,7 +189,7 @@
             <div class="p-4 space-y-3 border-t border-slate-100 bg-white">
               <div>
                 <label class="block text-xs font-bold text-slate-800 mb-1" for="pontos">Quantidade de Pontos Ativos RJ45</label>
-                <input type="number" id="pontos" value="24" min="1" required class="w-full bg-blue-50/50 border border-blue-300 rounded-lg px-3 py-2 text-slate-900 focus:ring-2 focus:ring-blue-500 font-bold text-lg" />
+                <input type="number" id="pontos" min="1" placeholder="Ex: 24" class="w-full bg-blue-50/50 border border-blue-300 rounded-lg px-3 py-2 text-slate-900 focus:ring-2 focus:ring-blue-500 font-bold text-lg" />
               </div>
               <div class="grid grid-cols-2 gap-2">
                 <div>
@@ -209,7 +209,7 @@
               </div>
               <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2.5">
                 <div>
-                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="tipoMedicao">Modo de Levantamento Métrica</label>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="tipoMedicao">Modo de Levantamento Métrico</label>
                   <select id="tipoMedicao" onchange="alternarModoMedicao()" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium">
                     <option value="absoluta" selected>Metragem Absoluta da Planta (m)</option>
                     <option value="media">Distância Média por Ponto (m)</option>
@@ -217,11 +217,11 @@
                 </div>
                 <div id="blocoMetragemAbsoluta">
                   <label class="block text-[11px] font-semibold text-slate-600 mb-1" for="metragemAbsoluta">Soma dos Lances na Planta (m)</label>
-                  <input type="number" id="metragemAbsoluta" value="350" min="1" step="1" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
+                  <input type="number" id="metragemAbsoluta" min="1" step="1" placeholder="Ex: 350" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
                 </div>
                 <div id="blocoDistanciaMedia" class="hidden">
                   <label class="block text-[11px] font-semibold text-slate-600 mb-1" for="distanciaMedia">Distância Média do Ponto ao Rack (m)</label>
-                  <input type="number" id="distanciaMedia" value="20" min="1" step="0.5" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
+                  <input type="number" id="distanciaMedia" min="1" step="0.5" placeholder="Ex: 20" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium" />
                 </div>
                 <div>
                   <label class="block text-[11px] font-semibold text-slate-600 mb-1" for="reserva">Margem Técnica de Curvas / Subidas (%)</label>
@@ -306,15 +306,15 @@
                 <div class="flex justify-between items-center">
                   <span class="text-[11px] font-bold text-emerald-900 uppercase">Pontos de Acesso Wi-Fi / AP</span>
                   <select id="incluirWifi" onchange="alternarWifi()" class="bg-white border border-emerald-300 rounded px-2 py-0.5 text-xs text-emerald-900 font-semibold">
-                    <option value="sim" selected>Sim</option>
-                    <option value="nao">Não</option>
+                    <option value="nao" selected>Não</option>
+                    <option value="sim">Sim</option>
                   </select>
                 </div>
-                <div id="blocoCamposWifi" class="space-y-2">
+                <div id="blocoCamposWifi" class="hidden space-y-2">
                   <div class="grid grid-cols-2 gap-2">
                     <div>
                       <label class="block text-[10px] font-semibold text-slate-700 mb-0.5" for="qtdWifi">Quantidade</label>
-                      <input type="number" id="qtdWifi" value="2" min="1" max="50" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-900 font-semibold" />
+                      <input type="number" id="qtdWifi" min="1" max="50" placeholder="Ex: 2" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-900 font-semibold" />
                     </div>
                     <div>
                       <label class="block text-[10px] font-semibold text-slate-700 mb-0.5" for="tipoDispositivoWifi">Tipo</label>
@@ -342,7 +342,6 @@
                       </select>
                     </div>
                   </div>
-                  <!-- FONTE DE ALIMENTAÇÃO WI-FI -->
                   <div>
                     <label class="block text-[10px] font-semibold text-slate-700 mb-0.5" for="alimentacaoWifi">Fonte de Alimentação AP / Roteador</label>
                     <select id="alimentacaoWifi" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-900 font-medium">
@@ -367,7 +366,7 @@
                   <div class="grid grid-cols-2 gap-2">
                     <div>
                       <label class="block text-[10px] font-semibold text-slate-700 mb-0.5" for="qtdSwitchMesa">Qtd Switches</label>
-                      <input type="number" id="qtdSwitchMesa" value="2" min="1" max="30" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-900 font-semibold" />
+                      <input type="number" id="qtdSwitchMesa" min="1" max="30" placeholder="Ex: 2" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-900 font-semibold" />
                     </div>
                     <div>
                       <label class="block text-[10px] font-semibold text-slate-700 mb-0.5" for="portasSwitchMesa">Portas</label>
@@ -400,7 +399,7 @@
             </div>
           </details>
 
-          <!-- 5. CONECTIVIDADE & CONSUMÍVEIS (NOVO MOTOR DE PATCH CORDS) -->
+          <!-- 5. CONECTIVIDADE & CONSUMÍVEIS -->
           <details class="accordion-item bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden" open>
             <summary class="flex justify-between items-center px-4 py-3 cursor-pointer bg-slate-50 hover:bg-slate-100 transition font-bold text-xs text-slate-800 select-none">
               <span class="flex items-center gap-2">🏷️ 5. Patch Cords & Consumíveis</span>
@@ -408,7 +407,6 @@
             </summary>
             <div class="p-4 space-y-3 border-t border-slate-100 bg-white">
               
-              <!-- Seletor do Modo de Cálculo -->
               <div>
                 <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="modoCalculoPC">Dimensionamento de Patch Cords</label>
                 <select id="modoCalculoPC" onchange="atualizarInterfacePatchCords()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-bold">
@@ -417,7 +415,6 @@
                 </select>
               </div>
 
-              <!-- Caixas de Marcação de Tipo (Fábrica vs Manual) -->
               <div class="space-y-1.5 pt-1">
                 <span class="block text-[11px] font-bold text-slate-700">Tipos de Patch Cords Requeridos:</span>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -432,10 +429,10 @@
                 </div>
               </div>
 
-              <!-- BLOCO A: MODO AUTOMÁTICO -->
+              <!-- Modo Automático -->
               <div id="blocoPCAuto" class="bg-blue-50/60 p-3 rounded-lg border border-blue-100 space-y-2">
                 <p class="text-[11px] text-blue-900 font-medium" id="textoAjudaAuto">
-                  O sistema dimensiona automaticamente os cabos de manobra (rack) e de estação (postos) com base no número de pontos.
+                  O sistema dimensiona os cabos de manobra (rack) e postos (estações) com base no número total de pontos informados.
                 </p>
                 <div id="subBlocoAutoMisto" class="hidden grid grid-cols-2 gap-2 text-xs pt-2 border-t border-blue-200/60">
                   <div>
@@ -455,96 +452,91 @@
                 </div>
               </div>
 
-              <!-- BLOCO B: MODO PERSONALIZADO / MÚLTIPLOS TAMANHOS -->
+              <!-- Modo Personalizado -->
               <div id="blocoPCManual" class="hidden space-y-3">
-                
-                <!-- Lista de Tamanhos Fábrica -->
                 <div id="blocoListaFabrica" class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 space-y-2">
-                  <span class="text-[11px] font-bold text-slate-800 block">Patch Cords de Fábrica (Injetados) - Selecione e indique as quantidades:</span>
+                  <span class="text-[11px] font-bold text-slate-800 block">Patch Cords de Fábrica - Selecione e indique a quantidade:</span>
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                     <div class="flex items-center justify-between gap-2 p-1.5 bg-white border border-slate-200 rounded">
                       <label class="flex items-center gap-1.5 text-xs text-slate-700 font-medium cursor-pointer">
-                        <input type="checkbox" id="chk_fabrica_05" onchange="togglePCInput('fabrica', '05')" checked class="rounded text-blue-600" />
+                        <input type="checkbox" id="chk_fabrica_05" onchange="togglePCInput('fabrica', '05')" class="rounded text-blue-600" />
                         <span>0,5 m</span>
                       </label>
-                      <input type="number" id="qtd_fabrica_05" value="24" min="1" class="w-16 bg-white border border-slate-300 rounded px-1.5 py-0.5 text-xs text-right font-bold text-slate-800" />
+                      <input type="number" id="qtd_fabrica_05" min="1" placeholder="0" disabled class="w-16 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-xs text-right font-bold text-slate-800" />
                     </div>
                     <div class="flex items-center justify-between gap-2 p-1.5 bg-white border border-slate-200 rounded">
                       <label class="flex items-center gap-1.5 text-xs text-slate-700 font-medium cursor-pointer">
                         <input type="checkbox" id="chk_fabrica_10" onchange="togglePCInput('fabrica', '10')" class="rounded text-blue-600" />
                         <span>1,0 m</span>
                       </label>
-                      <input type="number" id="qtd_fabrica_10" value="0" min="1" disabled class="w-16 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-xs text-right font-bold text-slate-800" />
+                      <input type="number" id="qtd_fabrica_10" min="1" placeholder="0" disabled class="w-16 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-xs text-right font-bold text-slate-800" />
                     </div>
                     <div class="flex items-center justify-between gap-2 p-1.5 bg-white border border-slate-200 rounded">
                       <label class="flex items-center gap-1.5 text-xs text-slate-700 font-medium cursor-pointer">
                         <input type="checkbox" id="chk_fabrica_15" onchange="togglePCInput('fabrica', '15')" class="rounded text-blue-600" />
                         <span>1,5 m</span>
                       </label>
-                      <input type="number" id="qtd_fabrica_15" value="0" min="1" disabled class="w-16 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-xs text-right font-bold text-slate-800" />
+                      <input type="number" id="qtd_fabrica_15" min="1" placeholder="0" disabled class="w-16 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-xs text-right font-bold text-slate-800" />
                     </div>
                     <div class="flex items-center justify-between gap-2 p-1.5 bg-white border border-slate-200 rounded">
                       <label class="flex items-center gap-1.5 text-xs text-slate-700 font-medium cursor-pointer">
-                        <input type="checkbox" id="chk_fabrica_25" onchange="togglePCInput('fabrica', '25')" checked class="rounded text-blue-600" />
+                        <input type="checkbox" id="chk_fabrica_25" onchange="togglePCInput('fabrica', '25')" class="rounded text-blue-600" />
                         <span>2,5 m</span>
                       </label>
-                      <input type="number" id="qtd_fabrica_25" value="24" min="1" class="w-16 bg-white border border-slate-300 rounded px-1.5 py-0.5 text-xs text-right font-bold text-slate-800" />
+                      <input type="number" id="qtd_fabrica_25" min="1" placeholder="0" disabled class="w-16 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-xs text-right font-bold text-slate-800" />
                     </div>
                     <div class="flex items-center justify-between gap-2 p-1.5 bg-white border border-slate-200 rounded sm:col-span-2">
                       <label class="flex items-center gap-1.5 text-xs text-slate-700 font-medium cursor-pointer">
                         <input type="checkbox" id="chk_fabrica_30" onchange="togglePCInput('fabrica', '30')" class="rounded text-blue-600" />
                         <span>3,0 m</span>
                       </label>
-                      <input type="number" id="qtd_fabrica_30" value="0" min="1" disabled class="w-16 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-xs text-right font-bold text-slate-800" />
+                      <input type="number" id="qtd_fabrica_30" min="1" placeholder="0" disabled class="w-16 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-xs text-right font-bold text-slate-800" />
                     </div>
                   </div>
                 </div>
 
-                <!-- Lista de Tamanhos Manual -->
                 <div id="blocoListaManual" class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 space-y-2">
-                  <span class="text-[11px] font-bold text-slate-800 block">Patch Cords Manuais (Campo) - Selecione e indique as quantidades:</span>
+                  <span class="text-[11px] font-bold text-slate-800 block">Patch Cords Manuais - Selecione e indique a quantidade:</span>
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                     <div class="flex items-center justify-between gap-2 p-1.5 bg-white border border-slate-200 rounded">
                       <label class="flex items-center gap-1.5 text-xs text-slate-700 font-medium cursor-pointer">
                         <input type="checkbox" id="chk_manual_05" onchange="togglePCInput('manual', '05')" class="rounded text-blue-600" />
                         <span>0,5 m</span>
                       </label>
-                      <input type="number" id="qtd_manual_05" value="0" min="1" disabled class="w-16 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-xs text-right font-bold text-slate-800" />
+                      <input type="number" id="qtd_manual_05" min="1" placeholder="0" disabled class="w-16 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-xs text-right font-bold text-slate-800" />
                     </div>
                     <div class="flex items-center justify-between gap-2 p-1.5 bg-white border border-slate-200 rounded">
                       <label class="flex items-center gap-1.5 text-xs text-slate-700 font-medium cursor-pointer">
                         <input type="checkbox" id="chk_manual_10" onchange="togglePCInput('manual', '10')" class="rounded text-blue-600" />
                         <span>1,0 m</span>
                       </label>
-                      <input type="number" id="qtd_manual_10" value="0" min="1" disabled class="w-16 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-xs text-right font-bold text-slate-800" />
+                      <input type="number" id="qtd_manual_10" min="1" placeholder="0" disabled class="w-16 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-xs text-right font-bold text-slate-800" />
                     </div>
                     <div class="flex items-center justify-between gap-2 p-1.5 bg-white border border-slate-200 rounded">
                       <label class="flex items-center gap-1.5 text-xs text-slate-700 font-medium cursor-pointer">
                         <input type="checkbox" id="chk_manual_15" onchange="togglePCInput('manual', '15')" class="rounded text-blue-600" />
                         <span>1,5 m</span>
                       </label>
-                      <input type="number" id="qtd_manual_15" value="0" min="1" disabled class="w-16 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-xs text-right font-bold text-slate-800" />
+                      <input type="number" id="qtd_manual_15" min="1" placeholder="0" disabled class="w-16 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-xs text-right font-bold text-slate-800" />
                     </div>
                     <div class="flex items-center justify-between gap-2 p-1.5 bg-white border border-slate-200 rounded">
                       <label class="flex items-center gap-1.5 text-xs text-slate-700 font-medium cursor-pointer">
                         <input type="checkbox" id="chk_manual_25" onchange="togglePCInput('manual', '25')" class="rounded text-blue-600" />
                         <span>2,5 m</span>
                       </label>
-                      <input type="number" id="qtd_manual_25" value="0" min="1" disabled class="w-16 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-xs text-right font-bold text-slate-800" />
+                      <input type="number" id="qtd_manual_25" min="1" placeholder="0" disabled class="w-16 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-xs text-right font-bold text-slate-800" />
                     </div>
                     <div class="flex items-center justify-between gap-2 p-1.5 bg-white border border-slate-200 rounded sm:col-span-2">
                       <label class="flex items-center gap-1.5 text-xs text-slate-700 font-medium cursor-pointer">
                         <input type="checkbox" id="chk_manual_30" onchange="togglePCInput('manual', '30')" class="rounded text-blue-600" />
                         <span>3,0 m</span>
                       </label>
-                      <input type="number" id="qtd_manual_30" value="0" min="1" disabled class="w-16 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-xs text-right font-bold text-slate-800" />
+                      <input type="number" id="qtd_manual_30" min="1" placeholder="0" disabled class="w-16 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-xs text-right font-bold text-slate-800" />
                     </div>
                   </div>
                 </div>
-
               </div>
 
-              <!-- Identificação -->
               <div>
                 <label class="block text-[11px] font-semibold text-slate-700 mb-1" for="usarRotuladora">Identificação / Fitas Laminadas</label>
                 <select id="usarRotuladora" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-medium">
@@ -570,7 +562,7 @@
         <div class="bg-blue-50/80 border border-blue-200 rounded-2xl p-4 shadow-sm break-inside-avoid">
           <div class="flex justify-between items-center mb-3">
             <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider">Resumo do Dimensionamento Físico</h3>
-            <span id="labelNomeProjeto" class="text-xs font-semibold text-blue-700 truncate max-w-[220px]">Andar Operacional - Bloco B</span>
+            <span id="labelNomeProjeto" class="text-xs font-semibold text-blue-700 truncate max-w-[220px]">—</span>
           </div>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
             <div class="bg-white p-2.5 rounded-xl border border-blue-100 shadow-sm">
@@ -582,7 +574,7 @@
               <span id="resumoCaixas" class="text-base font-bold text-blue-700">-</span>
             </div>
             <div class="bg-white p-2.5 rounded-xl border border-blue-100 shadow-sm">
-              <span class="text-[10px] text-slate-500 block font-medium">Total de Switches / APs</span>
+              <span class="text-[10px] text-slate-500 block font-medium">Equipamentos Ativos</span>
               <span id="resumoSwitches" class="text-base font-bold text-blue-700">-</span>
             </div>
             <div class="bg-white p-2.5 rounded-xl border border-blue-100 shadow-sm">
@@ -610,7 +602,13 @@
                   <th class="py-2.5 px-3">Aplicação / Especificação Técnica</th>
                 </tr>
               </thead>
-              <tbody id="tabelaMateriais" class="divide-y divide-slate-100"></tbody>
+              <tbody id="tabelaMateriais" class="divide-y divide-slate-100">
+                <tr>
+                  <td colspan="3" class="py-8 text-center text-slate-400">
+                    Insira os parâmetros da vistoria e clique em "Calcular Levantamento de Materiais" para gerar a especificação.
+                  </td>
+                </tr>
+              </tbody>
             </table>
           </div>
 
@@ -697,13 +695,11 @@
       });
     }
 
-    // Controle dinâmico da Interface de Patch Cords
     function atualizarInterfacePatchCords() {
       const modo = document.getElementById('modoCalculoPC').value;
       let hasFabrica = document.getElementById('checkPCFabrica').checked;
       let hasManual = document.getElementById('checkPCManual').checked;
 
-      // Garante que pelo menos um tipo fique selecionado
       if (!hasFabrica && !hasManual) {
         document.getElementById('checkPCFabrica').checked = true;
         hasFabrica = true;
@@ -722,10 +718,10 @@
 
         if (hasFabrica && hasManual) {
           subMisto.classList.remove('hidden');
-          txtAjuda.innerText = "Modo misto ativo: defina abaixo se a manobra no rack e os postos serão de fábrica ou confeccionados.";
+          txtAjuda.innerText = "Modo misto: selecione abaixo o padrão para o rack e para os postos de trabalho.";
         } else if (hasFabrica) {
           subMisto.classList.add('hidden');
-          txtAjuda.innerText = "Dimensionamento 100% de fábrica: cabos de manobra (0,5m) e postos (2,5m) injetados e testados de fábrica.";
+          txtAjuda.innerText = "Dimensionamento 100% de fábrica: cabos de manobra (0,5m) e postos (2,5m) injetados de fábrica.";
         } else {
           subMisto.classList.add('hidden');
           txtAjuda.innerText = "Dimensionamento 100% manual: cabos de manobra (0,5m) e postos (2,5m) confeccionados sob medida em campo.";
@@ -746,17 +742,27 @@
       if (chk.checked) {
         inp.classList.remove('bg-slate-100');
         inp.classList.add('bg-white');
-        if (parseInt(inp.value) <= 0) inp.value = 10;
+        if (!inp.value || parseInt(inp.value) <= 0) inp.value = 1;
       } else {
         inp.classList.add('bg-slate-100');
         inp.classList.remove('bg-white');
+        inp.value = "";
       }
     }
 
     // Motor de Cálculo Principal
-    function calcularMateriais() {
-      const nomeProjeto = document.getElementById('nomeProjeto').value.trim() || "Vistoria Sem Nome";
-      const pontos = parseInt(document.getElementById('pontos').value) || 0;
+    function calcularMateriais(alertaUsuario = false) {
+      const pontosVal = document.getElementById('pontos').value.trim();
+      const pontos = parseInt(pontosVal) || 0;
+
+      if (pontos <= 0) {
+        if (alertaUsuario) {
+          alert("Informe uma quantidade válida de pontos ativos RJ45 para gerar o quantitativo.");
+        }
+        return;
+      }
+
+      const nomeProjeto = document.getElementById('nomeProjeto').value.trim() || "Projeto Sem Nome";
       const categoria = document.getElementById('categoria').value;
       const blindagem = document.getElementById('blindagem').value;
       const tipoMedicao = document.getElementById('tipoMedicao').value;
@@ -789,14 +795,9 @@
       const hasFabrica = document.getElementById('checkPCFabrica').checked;
       const hasManual = document.getElementById('checkPCManual').checked;
 
-      if (pontos <= 0) {
-        alert("Informe uma quantidade válida de pontos ativos (> 0).");
-        return;
-      }
-
       document.getElementById('labelNomeProjeto').innerText = nomeProjeto;
 
-      // 1. Levantamento de Patch Cords e Metros Extras
+      // 1. Levantamento de Patch Cords e Metragem Adicional
       const listaPCFabrica = [];
       const listaPCManual = [];
       let totalCabosManuais = 0;
@@ -840,7 +841,6 @@
           }
         }
       } else {
-        // Modo Personalizado
         if (hasFabrica) {
           tamanhosRef.forEach(t => {
             const chk = document.getElementById(`chk_fabrica_${t.id}`);
@@ -869,7 +869,7 @@
         }
       }
 
-      // 2. Cabeamento Horizontal e Caixas (inclui metros de cabos manuais)
+      // 2. Cabeamento Horizontal e Bobinas
       let metrosBase = 0;
       if (tipoMedicao === 'absoluta') {
         metrosBase = parseFloat(document.getElementById('metragemAbsoluta').value) || 0;
@@ -895,7 +895,7 @@
         }
       }
 
-      // 3. Conectores e Tomadas
+      // 3. Conectividade e Tomadas
       const keystones = (tipoPP === 'modular') ? Math.ceil((pontos * 2) * 1.05) : pontos;
       const espelhos = Math.ceil(pontos / 2);
       const moduloCego = (pontos % 2 !== 0) ? 1 : 0;
@@ -985,7 +985,6 @@
         }
       ];
 
-      // Patch Cords de Fábrica
       listaPCFabrica.forEach(p => {
         itensCalculados.push({
           categoriaItem: "Patch Cords de Fábrica (Injetados)",
@@ -995,7 +994,6 @@
         });
       });
 
-      // Patch Cords Manuais
       listaPCManual.forEach(p => {
         itensCalculados.push({
           categoriaItem: "Patch Cords Manuais (Campo)",
@@ -1005,7 +1003,6 @@
         });
       });
 
-      // Ativos e Rack
       itensCalculados.push(
         {
           categoriaItem: "Infraestrutura de Rack, Energia & Ativos",
@@ -1045,7 +1042,6 @@
         }
       );
 
-      // Wi-Fi
       if (incluirWifi === 'sim' && qtdWifi > 0) {
         itensCalculados.push({
           categoriaItem: "Equipamentos Wi-Fi & Borda",
@@ -1061,7 +1057,6 @@
         });
       }
 
-      // Switches de Mesa
       if (incluirSwitchMesa === 'sim' && qtdSwitchMesa > 0) {
         itensCalculados.push({
           categoriaItem: "Ativos de Borda / Ilhas de Trabalho",
@@ -1077,7 +1072,6 @@
         });
       }
 
-      // Consumíveis
       itensCalculados.push(
         {
           categoriaItem: "Identificação & Consumíveis",
@@ -1138,10 +1132,10 @@
         return;
       }
 
-      const nomeEmpresa = document.getElementById('nomeEmpresa').value.trim() || "Empresa de Infraestrutura";
-      const respTecnico = document.getElementById('respTecnico').value.trim() || "Projetista Responsável";
-      const registroTecnico = document.getElementById('registroTecnico').value.trim() || "CFT/CREA";
-      const contatoTecnico = document.getElementById('contatoTecnico').value.trim() || "";
+      const nomeEmpresa = document.getElementById('nomeEmpresa').value.trim() || "Empresa de Engenharia / TI";
+      const respTecnico = document.getElementById('respTecnico').value.trim() || "Responsável Técnico";
+      const registroTecnico = document.getElementById('registroTecnico').value.trim() || "CFT / CREA";
+      const contatoTecnico = document.getElementById('contatoTecnico').value.trim() || "—";
       const nomeCliente = document.getElementById('nomeCliente').value.trim() || "Cliente Contratante";
       const nomeProjeto = document.getElementById('nomeProjeto').value.trim() || "Vistoria Técnica Padrão";
 
@@ -1238,7 +1232,6 @@
         if (el) dados[id] = el.value;
       });
 
-      // Booleans e inputs de patch cords
       dados['checkPCFabrica'] = document.getElementById('checkPCFabrica').checked;
       dados['checkPCManual'] = document.getElementById('checkPCManual').checked;
 
@@ -1250,11 +1243,11 @@
       });
 
       localStorage.setItem('infraspec_quantitativo_v2', JSON.stringify(dados));
-      alert("✅ Levantamento técnico salvo com sucesso!");
+      alert("✅ Levantamento técnico salvo no dispositivo!");
     }
 
     function carregarProjetoLocal() {
-      const salvo = localStorage.getItem('infraspec_quantitativo_v2') || localStorage.getItem('infraspec_projeto');
+      const salvo = localStorage.getItem('infraspec_quantitativo_v2');
       if (salvo) {
         try {
           const dados = JSON.parse(salvo);
@@ -1275,14 +1268,16 @@
               }
             });
           });
+          return true;
         } catch (e) {
           console.error("Erro ao carregar dados locais", e);
         }
       }
+      return false;
     }
 
     function limparFormulario() {
-      if (confirm("Deseja redefinir todo o formulário para os padrões de fábrica?")) {
+      if (confirm("Deseja limpar todos os campos do formulário?")) {
         localStorage.removeItem('infraspec_quantitativo_v2');
         localStorage.removeItem('infraspec_projeto');
         location.reload();
@@ -1290,12 +1285,14 @@
     }
 
     window.onload = function() {
-      carregarProjetoLocal();
+      const tinhaDadosSalvos = carregarProjetoLocal();
       alternarModoMedicao();
       alternarWifi();
       alternarSwitchMesa();
       atualizarInterfacePatchCords();
-      calcularMateriais();
+      if (tinhaDadosSalvos) {
+        calcularMateriais(false);
+      }
     };
   </script>
 </body>
